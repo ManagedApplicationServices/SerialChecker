@@ -1,0 +1,265 @@
+﻿/*html {
+    box-sizing: border-box;
+}*/
+
+/**, :after, :before {
+    box-sizing: inherit;
+}*/
+
+/*body {
+    padding: 1em;
+}*/
+
+/**
+ * Ordered list wrapper
+ * 1. Prevents ugly shapes when selecting .steps
+ * 2. Initializing counter
+ */
+/*ol*/
+.steps {
+    user-select: none;
+    /* 1 */
+    counter-reset: steps;
+    /* 2 */
+    overflow: hidden;
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1em 0;
+}
+
+/**
+ * Steps
+ * 1. Incrementing counter
+ */
+/*li*/
+.steps__item {
+    counter-increment: steps;
+    /* 1 */
+    background: #EFEFEF;
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    float: left;
+    position: relative;
+    white-space: nowrap;
+    /**
+   * Defining step width depending on the number of steps
+   */
+    /**
+   * Arrow shapes
+   */
+    /**
+   * Small width stuff kids
+   */
+}
+
+    .steps__item:first-child:nth-last-child(1),
+    .steps__item:first-child:nth-last-child(1) ~ .steps__item {
+        width: 100%;
+    }
+
+    .steps__item:first-child:nth-last-child(2),
+    .steps__item:first-child:nth-last-child(2) ~ .steps__item {
+        width: 50%;
+    }
+
+    .steps__item:first-child:nth-last-child(3),
+    .steps__item:first-child:nth-last-child(3) ~ .steps__item {
+        width: 33.33333%;
+    }
+
+    .steps__item:first-child:nth-last-child(4),
+    .steps__item:first-child:nth-last-child(4) ~ .steps__item {
+        width: 25%;
+    }
+
+    .steps__item:first-child:nth-last-child(5),
+    .steps__item:first-child:nth-last-child(5) ~ .steps__item {
+        width: 20%;
+    }
+
+    .steps__item:first-child:nth-last-child(6),
+    .steps__item:first-child:nth-last-child(6) ~ .steps__item {
+        width: 16.66667%;
+    }
+
+    .steps__item:first-child:nth-last-child(7),
+    .steps__item:first-child:nth-last-child(7) ~ .steps__item {
+        width: 14.28571%;
+    }
+
+    .steps__item:first-child:nth-last-child(8),
+    .steps__item:first-child:nth-last-child(8) ~ .steps__item {
+        width: 12.5%;
+    }
+
+    .steps__item:first-child:nth-last-child(9),
+    .steps__item:first-child:nth-last-child(9) ~ .steps__item {
+        width: 11.11111%;
+    }
+
+    .steps__item:first-child:nth-last-child(10),
+    .steps__item:first-child:nth-last-child(10) ~ .steps__item {
+        width: 10%;
+    }
+
+    .steps__item:after {
+        width: 1.85616em;
+        height: 1.85616em;
+        position: absolute;
+        top: 0.35355em;
+        left: 100%;
+        transform: rotate(45deg);
+        content: '';
+        z-index: 2;
+        background: inherit;
+        border-right: 1px solid #ccc;
+        border-top: 1px solid #ccc;
+        margin-left: -0.92808em;
+    }
+
+    .steps__item[disabled] {
+        cursor: not-allowed;
+    }
+
+@media (max-width: 767px) {
+    .steps__item {
+        width: 100% !important;
+        border: 1px solid #ccc;
+        border-bottom: none;
+        padding: 1em 0;
+    }
+
+        .steps__item:after {
+            content: none;
+        }
+}
+
+/**
+ * Left border on first item
+ */
+.steps__item--first {
+    border-left: 1px solid #ccc;
+}
+
+/**
+ * Right border on last item
+ */
+.steps__item--last {
+    border-right: 1px solid #ccc;
+    /**
+   * No left arrow on first item
+   * No right arrow on last item
+   */
+}
+
+@media (max-width: 767px) {
+    .steps__item--last {
+        border-bottom: 1px solid #ccc;
+    }
+}
+
+.steps__item--last:after {
+    content: none;
+}
+
+/**
+ * Step link
+ */
+/*a|span*/
+.steps__link {
+    transition: .25s ease-out;
+    color: #999;
+    display: block;
+    text-align: center;
+    text-decoration: none;
+    padding: 0.5em 0;
+    /**
+   * Counter
+   */
+    /**
+   * Hover stuff
+   */
+}
+
+    .steps__link:before {
+        width: 1.5em;
+        height: 1.5em;
+        display: inline-block;
+        content: counter(steps);
+        text-align: center;
+        background: #BCBCBC;
+        border-radius: 50%;
+        color: white;
+        margin: 0 1em;
+        line-height: 1.5em;
+    }
+
+:not([disabled]) > .steps__link:hover,
+:not([disabled]) > .steps__link:focus {
+    color: #333;
+}
+
+@media (max-width: 767px) {
+    .steps__link:before {
+        float: left;
+        margin-right: 0;
+    }
+}
+
+/**
+ * Active state
+ */
+/*a*/
+.steps__item--active {
+    background: #FFF;
+}
+
+    /**
+ * Change link colors
+ */
+    .steps__item--done .steps__link,
+    .steps__item--active .steps__link {
+        color: #333;
+    }
+
+        .steps__item--done .steps__link:before,
+        .steps__item--active .steps__link:before {
+            background: #22a4bc;
+        }
+
+/**
+ * Fallback for IE 8
+ * Require Modernizr
+ */
+/*html*/
+.no-csstransforms {
+    /*li*/
+}
+
+    .no-csstransforms .steps__item {
+        border-right: 1px solid #ccc;
+    }
+
+        .no-csstransforms .steps__item:after {
+            content: none !important;
+        }
+
+/**
+ * Fallback for IE 7
+ * Require Modernizr
+ */
+/*html*/
+.no-generatedcontent .steps {
+    list-style-position: inside;
+    list-style-type: decimal;
+}
+
+.no-generatedcontent .steps__link:before {
+    content: none;
+}
+
+.p {
+    text-align: center;
+    font-size: 13px;
+    margin-top: 100px;
+}
