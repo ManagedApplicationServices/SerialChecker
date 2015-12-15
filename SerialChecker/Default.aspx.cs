@@ -143,7 +143,7 @@ namespace SerialChecker
                                     "<td>" +
                                   "</tr>" +
                                "</table></br>" +
-                               "<span><a href='http://172.19.107.84/SerialChecker/WrongBRN?name='" + custName + "'>Click me if the BRN is not correct</a></span></br></br>" +
+                               "<span><a href='http://172.19.107.84/SerialChecker/WrongBRN?name=" + custName + "'>Click me if the BRN is not correct</a></span></br></br>" +
                                "<span>Regards, </span></br>" +
                                "<span>Managed Application Services";
             SmtpClient smtpClient = new SmtpClient("172.19.107.45");
