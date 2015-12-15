@@ -19,20 +19,22 @@
             </HeaderTemplate>
             <WizardSteps>
                 <asp:WizardStep ID="WizardStep1" runat="server" Title="Enter Serial Number">
-                    <div class="panel panel-default">
-                        <div class="panel-body text-center">
-                            <div class="form-inline">
-                                <div class="form-group" id="divSearch" runat="server">
-                                    <label for="txtSerialNo" class="sr-only">Serial Number</label>
-                                    <asp:TextBox ID="txtSerialNo" runat="server" CssClass="form-control input-lg" placeholder="Serial Number"></asp:TextBox>
-                                </div>
-                                <asp:LinkButton ID="btnSearch" runat="server" CssClass="btn btn-lg btn-primary-outline" OnClick="btnSearch_Click">
+                    <asp:Panel runat="server" DefaultButton="btnSearch">
+                        <div class="panel panel-default">
+                            <div class="panel-body text-center">
+                                <div class="form-inline">
+                                    <div class="form-group" id="divSearch" runat="server">
+                                        <label for="txtSerialNo" class="sr-only">Serial Number</label>
+                                        <asp:TextBox ID="txtSerialNo" runat="server" CssClass="form-control input-lg" placeholder="Serial Number"></asp:TextBox>
+                                    </div>
+                                    <asp:LinkButton ID="btnSearch" runat="server" CssClass="btn btn-lg btn-primary-outline" OnClick="btnSearch_Click">
                                     <span class="icon icon-magnifying-glass"></span> 
                                     Search
-                                </asp:LinkButton>
+                                    </asp:LinkButton>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </asp:Panel>
                 </asp:WizardStep>
                 <asp:WizardStep ID="WizardStep2" runat="server" Title="Select Customer From Advance">
                     <div role="alert" runat="server" id="divAdvanceMsg">
