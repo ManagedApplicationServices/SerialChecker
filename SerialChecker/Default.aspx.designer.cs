@@ -55,7 +55,7 @@ namespace SerialChecker {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnSearch;
+        protected global::System.Web.UI.WebControls.LinkButton btnSearch;
         
         /// <summary>
         /// WizardStep2 control.
@@ -67,13 +67,22 @@ namespace SerialChecker {
         protected global::System.Web.UI.WebControls.WizardStep WizardStep2;
         
         /// <summary>
+        /// divAdvanceMsg control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl divAdvanceMsg;
+        
+        /// <summary>
         /// gvAdvanceCustomer control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView gvAdvanceCustomer;
+        protected global::System.Web.UI.WebControls.Repeater gvAdvanceCustomer;
         
         /// <summary>
         /// WizardStep3 control.
@@ -85,13 +94,22 @@ namespace SerialChecker {
         protected global::System.Web.UI.WebControls.WizardStep WizardStep3;
         
         /// <summary>
+        /// divCRMCustomer control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl divCRMCustomer;
+        
+        /// <summary>
         /// gvCRMCustomer control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView gvCRMCustomer;
+        protected global::System.Web.UI.WebControls.Repeater gvCRMCustomer;
         
         /// <summary>
         /// WizardStep4 control.

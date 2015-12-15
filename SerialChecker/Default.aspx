@@ -1,14 +1,6 @@
 ﻿<%@ Page Title="Serial Checker" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Default.aspx.cs" Inherits="SerialChecker._Default" EnableEventValidation="false" %>
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
-    <script type="text/javascript">
-        function AdvanceSelect(id) {
-            document.getElementById('MainContent_Wizard1_gvAdvanceCustomer_' + id).click();
-        }
-        function CRMSelect(id) {
-            document.getElementById('MainContent_Wizard1_gvCRMCustomer_' + id).click();
-        }
-    </script>
     <div>
         <asp:Wizard ID="Wizard1" runat="server" DisplaySideBar="false" CssClass="col-sm-12" StepNextButtonStyle-CssClass="hidden" StepPreviousButtonStyle-CssClass="hidden"
             FinishPreviousButtonStyle-CssClass="hidden" StartNextButtonStyle-CssClass="hidden" FinishCompleteButtonStyle-CssClass="hidden" OnFinishButtonClick="Wizard1_FinishButtonClick">
@@ -27,111 +19,72 @@
             </HeaderTemplate>
             <WizardSteps>
                 <asp:WizardStep ID="WizardStep1" runat="server" Title="Enter Serial Number">
-                    <div class="well well-lg" align="center">
-                        <div class="form-inline">
-                            <div class="form-group" id="divSearch" runat="server">
-                                <label for="txtSerialNo" class="sr-only">Serial Number</label>
-                                <asp:TextBox ID="txtSerialNo" runat="server" CssClass="form-control input-lg" placeholder="Serial Number"></asp:TextBox>
+                    <div class="panel panel-default">
+                        <div class="panel-body text-center">
+                            <div class="form-inline">
+                                <div class="form-group" id="divSearch" runat="server">
+                                    <label for="txtSerialNo" class="sr-only">Serial Number</label>
+                                    <asp:TextBox ID="txtSerialNo" runat="server" CssClass="form-control input-lg" placeholder="Serial Number"></asp:TextBox>
+                                </div>
+                                <asp:LinkButton ID="btnSearch" runat="server" CssClass="btn btn-lg btn-primary-outline" OnClick="btnSearch_Click">
+                                    <span class="icon icon-magnifying-glass"></span> 
+                                    Search
+                                </asp:LinkButton>
                             </div>
-                            <asp:Button ID="btnSearch" runat="server" Text="Search" CssClass="btn btn-lg btn-primary" OnClick="btnSearch_Click" />
                         </div>
                     </div>
                 </asp:WizardStep>
                 <asp:WizardStep ID="WizardStep2" runat="server" Title="Select Customer From Advance">
-                    <asp:GridView ID="gvAdvanceCustomer" runat="server" CssClass="table table-bordered table-hover" AutoGenerateColumns="false" ShowHeader="false"
-                        EmptyDataText="Customer not found." DataKeyNames="custNo, Name, BRN" OnRowCreated="gvAdvanceCustomer_RowCreated">
-                        <Columns>
-                            <asp:TemplateField>
-                                <ItemTemplate>
-                                    <div class="row">
-                                        <asp:Button ID="btnSelect" runat="server" Text="Select" CssClass="btn btn-info btn-xs hidden" OnClick="btnSelect_Click" />
-                                        <div class="col-sm-12">
-                                            <div class="col-sm-12">
-                                                <div class="col-sm-3">
-                                                    <b>Company Name: </b>
-                                                </div>
-                                                <div class="col-sm-9">
-                                                    <asp:Label ID="lblName" runat="server" Text='<%# Bind("Name") %>'></asp:Label>
-                                                </div>
-                                            </div>
-                                            <br />
-                                            <div class="col-sm-12">
-                                                <div class="col-sm-3">
-                                                    <b>Contract: </b>
-                                                </div>
-                                                <div class="col-sm-9">
-                                                    <asp:Label ID="lblContract" runat="server" Text='<%# Bind("contractNo") %>'></asp:Label>
-                                                </div>
-                                            </div>
-                                            <br />
-                                            <div class="col-sm-12">
-                                                <div class="col-sm-3">
-                                                    <b>Model: </b>
-                                                </div>
-                                                <div class="col-sm-9">
-                                                    <asp:Label ID="lblModel" runat="server" Text='<%# Bind("model") %>'></asp:Label>
-                                                </div>
-                                            </div>
-                                            <br />
-                                            <div class="col-sm-12">
-                                                <div class="col-sm-3">
-                                                    <b>Item Number: </b>
-                                                </div>
-                                                <div class="col-sm-9">
-                                                    <asp:Label ID="lblItemNo" runat="server" Text='<%# Bind("itemNo") %>'></asp:Label>
-                                                </div>
-                                            </div>
-                                            <br />
-                                            <div class="col-sm-12">
-                                                <div class="col-sm-3">
-                                                    <b>BRN: </b>
-                                                </div>
-                                                <div class="col-sm-9">
-                                                    <asp:Label ID="lblBRN" runat="server" Text='<%# Bind("BRN") %>'></asp:Label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </ItemTemplate>
-                            </asp:TemplateField>
-                        </Columns>
-                    </asp:GridView>
+                    <div role="alert" runat="server" id="divAdvanceMsg">
+                        <strong>No record found..</strong>
+                    </div>
+                    <ul class="list-group">
+                        <asp:Repeater runat="server" ID="gvAdvanceCustomer">
+                            <ItemTemplate>
+                                <asp:LinkButton runat="server" ID="lbSelectAdvance" CssClass="list-group-item" OnClick="lbSelectAdvance_Click">
+                                    <dl class="dl-horizontal">
+                                        <asp:HiddenField ID="hfCustNo" runat="server" Value='<%# Bind("custNo") %>' />
+                                        <asp:HiddenField ID="hfName" runat="server" Value='<%# Bind("Name") %>' />
+                                        <asp:HiddenField ID="hfBRN" runat="server" Value='<%# Bind("BRN") %>' />
+                                        <dt>Company Name</dt>
+                                        <dd><%# Eval("Name") %></dd>
+                                        <dt>Contract</dt>
+                                        <dd><%# Eval("contractNo") %></dd>
+                                        <dt>Model</dt>
+                                        <dd><%# Eval("model") %></dd>
+                                        <dt>Item Number</dt>
+                                        <dd><%# Eval("itemNo") %></dd>
+                                        <dt>BRN</dt>
+                                        <dd><%# Eval("BRN") %></dd>
+                                    </dl>
+                                </asp:LinkButton>
+                            </ItemTemplate>
+                        </asp:Repeater>
+                    </ul>
                 </asp:WizardStep>
                 <asp:WizardStep ID="WizardStep3" runat="server" Title="Selet Customer From CRM">
-                    <div>
-                        <%--<asp:Button ID="btnNoMatch" runat="server" Text="None of above matches" CssClass="btn btn-primary btn-block" OnClick="btnNoMatch_Click" />--%>
+                    <div role="alert" runat="server" id="divCRMCustomer">
+                        <strong>No record found..</strong>
                     </div>
-                    <asp:GridView ID="gvCRMCustomer" runat="server" CssClass="table table-bordered table-hover" EmptyDataText="Customer not found."
-                        AutoGenerateColumns="false" ShowHeader="false" OnRowCreated="gvCRMCustomer_RowCreated" DataKeyNames="name, brn, AdvanceCustNo, AdvanceCustName, AdvanceBRN">
-                        <Columns>
-                            <asp:TemplateField>
-                                <ItemTemplate>
-                                    <div>
-                                        <asp:Button ID="btnSelectCRM" runat="server" Text="Select" CssClass="btn btn-info hidden" OnClick="btnSelectCRM_Click" />
-                                        <div class="container-fluid">
-                                            <div class="col-sm-12">
-                                                <div class="col-sm-2">
-                                                    <b>Company Name: </b>
-                                                </div>
-                                                <div class="col-sm-10">
-                                                    <asp:Label ID="lblName" runat="server" Text='<%# Bind("name") %>'></asp:Label>
-                                                </div>
-                                            </div>
-                                            <br />
-                                            <div class="col-sm-12">
-                                                <div class="col-sm-2">
-                                                    <b>BRN: </b>
-                                                </div>
-                                                <div class="col-sm-10">
-                                                    <asp:Label ID="lblBRN" runat="server" Text='<%# Bind("brn") %>'></asp:Label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </ItemTemplate>
-                            </asp:TemplateField>
-                        </Columns>
-                    </asp:GridView>
+                    <ul class="list-group">
+                        <asp:Repeater runat="server" ID="gvCRMCustomer">
+                            <ItemTemplate>
+                                <asp:LinkButton runat="server" ID="lbSelectCRM" OnClick="lbSelectCRM_Click" CssClass="list-group-item">
+                                    <dl class="dl-horizontal">
+                                        <asp:HiddenField ID="hfName" runat="server" Value='<%# Bind("name") %>' />
+                                        <asp:HiddenField ID="hfBrn" runat="server" Value='<%# Bind("brn") %>' />
+                                        <asp:HiddenField ID="hfAdvanceCustNo" runat="server" Value='<%# Bind("AdvanceCustNo") %>' />
+                                        <asp:HiddenField ID="hfAdvanceCustName" runat="server" Value='<%# Bind("AdvanceCustName") %>' />
+                                        <asp:HiddenField ID="hfAdvanceBRN" runat="server" Value='<%# Bind("AdvanceBRN") %>' />
+                                        <dt>Company Name</dt>
+                                        <dd><%# Eval("name") %></dd>
+                                        <dt>BRN</dt>
+                                        <dd><%# Eval("brn") %></dd>
+                                    </dl>
+                                </asp:LinkButton>
+                            </ItemTemplate>
+                        </asp:Repeater>
+                    </ul>
                 </asp:WizardStep>
                 <asp:WizardStep ID="WizardStep4" runat="server" Title="MIF Information">
                     <asp:Repeater runat="server" ID="gvMifInfo">
@@ -267,14 +220,14 @@
                 </asp:WizardStep>
             </WizardSteps>
             <StepNavigationTemplate>
-                <asp:LinkButton ID="btnPrevious" runat="server" CssClass="btn btn-warning" CommandName="MovePrevious" CausesValidation="false">
-                    <span class="icon icon-arrow-left"></span>
-                    Previous
+                <asp:LinkButton ID="btnPrevious" runat="server" CssClass="btn btn-danger-outline" CommandName="MovePrevious" CausesValidation="false">
+                    <span class="icon icon-back"></span>
+                    Back
                 </asp:LinkButton>
             </StepNavigationTemplate>
             <FinishNavigationTemplate>
-                <asp:LinkButton ID="btnFinish" runat="server" CssClass="btn btn-success" CommandName="MoveComplete" CausesValidation="false">
-                    <span class="icon icon-thumbs-up"></span>
+                <asp:LinkButton ID="btnFinish" runat="server" CssClass="btn btn-success-outline" CommandName="MoveComplete" CausesValidation="false">
+                    <span class="icon icon-home"></span>
                     Finish
                 </asp:LinkButton>
             </FinishNavigationTemplate>

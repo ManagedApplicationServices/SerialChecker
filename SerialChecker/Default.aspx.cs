@@ -54,21 +54,34 @@ namespace SerialChecker
 
                 divSearch.Attributes["class"] = "form-group";
                 Wizard1.MoveTo(WizardStep2);
+
+                if (GetData(getSerialQuery).Rows.Count == 0)
+                {
+                    divAdvanceMsg.Attributes.Add("class", "show alert alert-warning");
+                }
+                else
+                {
+                    divAdvanceMsg.Attributes.Add("class", "hidden");
+                }
             }
             else
             {
                 divSearch.Attributes["class"] = "form-group has-error has-feedback";
             }
         }
-        protected void btnSelect_Click(object sender, EventArgs e)
+        protected void lbSelectAdvance_Click(object sender, EventArgs e)
         {
-            Button btn = sender as Button;
-            GridViewRow row = btn.NamingContainer as GridViewRow;
-            string custNo = gvAdvanceCustomer.DataKeys[row.RowIndex].Values[0].ToString();
-            string custName = gvAdvanceCustomer.DataKeys[row.RowIndex].Values[1].ToString().Replace("&", "%26");
-            string BRN = gvAdvanceCustomer.DataKeys[row.RowIndex].Values[2].ToString();
+            LinkButton btn = sender as LinkButton;
+            HiddenField hfCustNo = btn.FindControl("hfCustNo") as HiddenField;
+            HiddenField hfName = btn.FindControl("hfName") as HiddenField;
+            HiddenField hfBRN = btn.FindControl("hfBRN") as HiddenField;
+
+            string custNo = hfCustNo.Value;
+            string custName = hfName.Value;
+            string BRN = hfBRN.Value;
 
             string CRMCustomerInfo = GetCustomerInfo(custNo, custName, BRN);
+
             if (CRMCustomerInfo != "Customer not found.")
             {
                 Customer customer = new System.Web.Script.Serialization.JavaScriptSerializer().Deserialize<Customer>(CRMCustomerInfo);
@@ -85,10 +98,12 @@ namespace SerialChecker
                         AdvanceBRN = BRN,
                     });
                 }
+                divCRMCustomer.Attributes.Add("class", "hidden");
             }
             else
             {
                 clients = null;
+                divCRMCustomer.Attributes.Add("class", "show alert alert-warning");
             }
 
             gvCRMCustomer.DataSource = clients;
@@ -96,16 +111,20 @@ namespace SerialChecker
 
             Wizard1.MoveTo(WizardStep3);
         }
-        protected void btnSelectCRM_Click(object sender, EventArgs e)
+        protected void lbSelectCRM_Click(object sender, EventArgs e)
         {
-            Button btn = sender as Button;
-            GridViewRow row = btn.NamingContainer as GridViewRow;
+            LinkButton btn = sender as LinkButton;
+            HiddenField hfName = btn.FindControl("hfName") as HiddenField;
+            HiddenField hfBrn = btn.FindControl("hfBrn") as HiddenField;
+            HiddenField hfAdvanceCustNo = btn.FindControl("hfAdvanceCustNo") as HiddenField;
+            HiddenField hfAdvanceCustName = btn.FindControl("hfAdvanceCustName") as HiddenField;
+            HiddenField hfAdvanceBRN = btn.FindControl("hfAdvanceBRN") as HiddenField;
 
-            string CRMCustName = gvCRMCustomer.DataKeys[row.RowIndex].Values[0].ToString();
-            string CRMBRN = gvCRMCustomer.DataKeys[row.RowIndex].Values[1].ToString();
-            string AdvanceCustNo = gvCRMCustomer.DataKeys[row.RowIndex].Values[2].ToString();
-            string AdvanceCustName = gvCRMCustomer.DataKeys[row.RowIndex].Values[3].ToString();
-            string AdvanceBRN = gvCRMCustomer.DataKeys[row.RowIndex].Values[4].ToString();
+            string CRMCustName = hfName.Value;
+            string CRMBRN = hfBrn.Value;
+            string AdvanceCustNo = hfAdvanceCustNo.Value;
+            string AdvanceCustName = hfAdvanceCustName.Value;
+            string AdvanceBRN = hfAdvanceBRN.Value;
 
             GetMifInfo(AdvanceCustNo);
 
@@ -316,52 +335,6 @@ namespace SerialChecker
                 return "steps__item steps__item--active" + stepString;
             }
         }
-        protected string GetClassForWizardStepLg(object wizardStep)
-        {
-            WizardStep step = wizardStep as WizardStep;
-
-            if (step == null)
-            {
-                return "";
-            }
-            int stepIndex = Wizard1.WizardSteps.IndexOf(step);
-
-            if (stepIndex < Wizard1.ActiveStepIndex)
-            {
-                return "prevStep";
-                //return "";
-            }
-            else if (stepIndex > Wizard1.ActiveStepIndex)
-            {
-                return "nextStep";
-                //return "";
-            }
-            else
-            {
-                return "currentStep";
-                //return "active";
-            }
-        }
-        protected void gvAdvanceCustomer_RowCreated(object sender, GridViewRowEventArgs e)
-        {
-            if (e.Row.RowType == DataControlRowType.DataRow)
-            {
-                Button btnSelect = e.Row.FindControl("btnSelect") as Button;
-                e.Row.Attributes["onclick"] = "AdvanceSelect('" + btnSelect.ClientID + "')";
-                e.Row.Attributes["style"] = "cursor:pointer";
-            }
-        }
-
-        protected void gvCRMCustomer_RowCreated(object sender, GridViewRowEventArgs e)
-        {
-            if (e.Row.RowType == DataControlRowType.DataRow)
-            {
-                Button btnSelectCRM = e.Row.FindControl("btnSelectCRM") as Button;
-                e.Row.Attributes["onclick"] = "CRMSelect('" + btnSelectCRM.ClientID + "')";
-                e.Row.Attributes["style"] = "cursor:pointer";
-            }
-        }
-
         protected void Wizard1_FinishButtonClick(object sender, WizardNavigationEventArgs e)
         {
             Response.Redirect(Request.RawUrl);
