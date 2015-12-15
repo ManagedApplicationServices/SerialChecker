@@ -249,7 +249,7 @@
                                                 </a>
                                                 <div class="collapse" id='<%# Eval("invoiceNo") %>'>
                                                     <div class="well">
-                                                        <dl class="dl">
+                                                        <dl class="dl-horizontal">
                                                             <dt>BW Copies</dt>
                                                             <dd><span><%# Eval("bw") %></span></dd>
                                                             <dt>COL Copies</dt>
