@@ -13,6 +13,7 @@
     </asp:PlaceHolder>
     <webopt:BundleReference runat="server" Path="~/Content/css" />
     <link href="favicon.ico" rel="shortcut icon" type="image/x-icon" />
+    <link href="dist/toolkit.min.css" rel="stylesheet" />
 
 </head>
 <body>
@@ -23,7 +24,7 @@
                 <%--Framework Scripts--%>
                 <asp:ScriptReference Name="MsAjaxBundle" />
                 <asp:ScriptReference Name="jquery" />
-                <asp:ScriptReference Name="bootstrap" />
+                <%--<asp:ScriptReference Name="bootstrap" />--%>
                 <asp:ScriptReference Name="respond" />
                 <asp:ScriptReference Name="WebForms.js" Assembly="System.Web" Path="~/Scripts/WebForms/WebForms.js" />
                 <asp:ScriptReference Name="WebUIValidation.js" Assembly="System.Web" Path="~/Scripts/WebForms/WebUIValidation.js" />
@@ -37,6 +38,7 @@
                 <%--Site Scripts--%>
             </Scripts>
         </asp:ScriptManager>
+        <script src="dist/toolkit.min.js"></script>
 
         <div class="navbar navbar-inverse navbar-fixed-top">
             <div class="container">
@@ -60,7 +62,7 @@
                 </div>
             </div>
         </div>
-        <div class="container body-content">
+        <div class="container body-content p-t-md">
             <asp:ContentPlaceHolder ID="MainContent" runat="server">
             </asp:ContentPlaceHolder>
         </div>

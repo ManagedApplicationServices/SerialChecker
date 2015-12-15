@@ -109,6 +109,33 @@ namespace SerialChecker {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView gvMifInfo;
+        protected global::System.Web.UI.WebControls.Repeater gvMifInfo;
+        
+        /// <summary>
+        /// gvServiceH control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Repeater gvServiceH;
+        
+        /// <summary>
+        /// gvTonerH control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Repeater gvTonerH;
+        
+        /// <summary>
+        /// gvMeterH control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Repeater gvMeterH;
     }
 }

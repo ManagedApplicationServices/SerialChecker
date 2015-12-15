@@ -107,7 +107,7 @@ namespace SerialChecker
             string AdvanceCustName = gvCRMCustomer.DataKeys[row.RowIndex].Values[3].ToString();
             string AdvanceBRN = gvCRMCustomer.DataKeys[row.RowIndex].Values[4].ToString();
 
-            GetMifInfo();
+            GetMifInfo(AdvanceCustNo);
 
             Wizard1.MoveTo(WizardStep4);
 
@@ -120,7 +120,7 @@ namespace SerialChecker
         {
             MailMessage mailMessage = new MailMessage();
             mailMessage.To.Add("zhaidy@ricoh.sg");
-            mailMessage.To.Add("AdrianLim@ricoh.sg");
+            //mailMessage.To.Add("AdrianLim@ricoh.sg");
             mailMessage.From = new MailAddress("rspops@ricoh.sg", "Managed Application Services");
             mailMessage.Subject = "Customer BRN Update [RESTRICTED]";
             mailMessage.IsBodyHtml = true;
@@ -142,30 +142,105 @@ namespace SerialChecker
                                     "<td><b>" + brn + "</b></td>" +
                                     "<td>" +
                                   "</tr>" +
-                               "</table></br></br>" +
+                               "</table></br>" +
+                               "<span><a href='http://172.19.107.84/SerialChecker/WrongBRN?name='" + custName + "'>Click me if the BRN is not correct</a></span></br></br>" +
                                "<span>Regards, </span></br>" +
                                "<span>Managed Application Services";
             SmtpClient smtpClient = new SmtpClient("172.19.107.45");
             smtpClient.Send(mailMessage);
         }
-        protected void GetMifInfo()
+        protected void GetMifInfo(string custNo)
         {
-            string getMifInfoCmd = "SELECT mt.[serial-no] AS   [serialNo] " +
-                                        ", mt.[contract-no] AS [contractNo] " +
-                                        ", c.name " +
-                                        ", s.[location] " +
-                                        ", ct.[contact] " +
-                                        ", CONVERT( VARCHAR(10), ct.[cntrct-end], 103) AS [cntrctEnd] " +
-                                        ", i2.[model] " +
+            string getMifInfoCmd = "SELECT mt.[serial-no] AS                                [serialNo] " +
+                                        ", mt.[contract-no] AS                              [contractNo] " +
+                                        ", ct.[contract-typ] AS						        [contractType] " +
+                                        ", c.name AS                                        [name] " +
+                                        ", s.[location] AS                                  [location] " +
+                                        ", CONVERT( VARCHAR, s.[install-date], 103) AS      [installDate] " +
+                                        ", ct.[contact] AS                                  [contact] " +
+                                        ", CONVERT( VARCHAR(10), ct.[cntrct-start], 103) AS [cntrctStart] " +
+                                        ", CONVERT( VARCHAR(10), ct.[cntrct-end], 103) AS   [cntrctEnd] " +
+                                        ", i2.[model] AS                                    [model] " +
                                    "FROM datacenter.dbo.mif_tdv AS mt " +
                                    "INNER JOIN customer AS c ON c.[cust-no] = mt.[cust-no] " +
-                                   "INNER JOIN serial AS s ON s.[serial-no] = mt.[serial-no] AND s.[item-no] = mt.[item-no]" +
+                                   "INNER JOIN serial AS s ON s.[serial-no] = mt.[serial-no] AND s.[item-no] = mt.[item-no] " +
                                    "INNER JOIN contract AS ct ON ct.[contract-no] = mt.[contract-no] " +
                                    "INNER JOIN item2 AS i2 ON i2.[item-no] = mt.[item-no] " +
                                    "WHERE mt.[trans-date] = datacenter.dbo.firstdayofpreviousmonth(getdate()) " +
                                      "AND mt.[serial-no] = '" + txtSerialNo.Text + "'";
             gvMifInfo.DataSource = GetData(getMifInfoCmd);
             gvMifInfo.DataBind();
+
+            string getServiceHCmd = "SELECT s.[service-no] AS                                                                                                                                 [serviceNo] " +
+                                         ", CASE " +
+                                               "WHEN s.[problem-code] IN ( 'P02', 'F100', 'F101', 'D11', 'E09', 'E10' )  " +
+                                               "THEN 'INS' " +
+                                               "WHEN s.[service-type] IN ( 'APFC', 'APFW', 'APRT-EXX', 'APRT-OTH', 'FC', 'FW', 'RT-EXXON', 'RT-O', 'RT-OTHER', 'PPP', 'APPPP' )  " +
+                                               "THEN 'EM' " +
+                                               "WHEN s.[service-type] IN ( 'PM', 'RCFC', 'RCFW', 'RCRT-EXX', 'RCRT-OTH', 'SCFC', 'SCFW', 'RCPPP' )  " +
+                                               "THEN 'PM' " +
+                                               "ELSE ( 'OTHERS' )  " +
+                                           "END AS                                                                                                                                            [typeOfService] " +
+                                         ", ( SELECT TOP 1 UPPER(tt.team)  " +
+                                             "FROM datacenter.dbo.[tech_team] AS tt " +
+                                             "WHERE tt.[tech-code] = s.[tech-code] ) AS                                                                                                       [team] " +
+                                         ", UPPER(s.[tech-code]) AS                                                                                                                           [techCode] " +
+                                         ", ( SELECT TOP 1 UPPER(tt.[tech-name])  " +
+                                             "FROM datacenter.dbo.[tech_team] AS tt " +
+                                             "WHERE tt.[tech-code] = s.[tech-code] ) AS                                                                                                       [techName] " +
+                                         ", (select top 1 c.[column 2] from codes c " +
+                                             "where c.[column 0] = 'SOPT' and " +
+                                             "c.[column 1] = s.[problem-code]) AS                                                                                                             [problemDesc] " +
+                                         ", (select top 1 c.[column 2] from codes c " +
+                                             "where c.[column 0] = 'SOPC' and " +
+                                                   "c.[column 1] = s.[cause-code]) AS                                                                                                         [causeDesc] " +
+                                         ", (select top 1 c.[column 2] from codes c " +
+                                             "where c.[column 0] = 'SOPR' and " +
+                                                   "c.[column 1] = s.[repair-code]) AS                                                                                                        [repairDesc] " +
+                                         ", (select top 1 smh.[meter_reading] from smeter_history smh " +
+                                             "where smh.[service_no] = s.[service-no] and " + 
+                                                   "smh.[meter_type] like 'B%') AS                                                                                                            [BWReading] " +
+                                         ", (select top 1 smh.[meter_reading] from smeter_history smh " +
+                                             "where smh.[service_no] = s.[service-no] and smh.[meter_type] like 'C%') AS                                                                      [COLReading] " +
+                                         ", CONVERT( VARCHAR, s.[entry-date], 103) AS                                                                                                         [entryDate] " +
+                                         ", CONVERT( VARCHAR, s.[entry-date], 103) + ' ' + LEFT(CONVERT(VARCHAR, s.[entry-time]), 2) + ':' + RIGHT(CONVERT(VARCHAR, s.[entry-time]), 2) AS    [entryDateTime] " +
+                                         ", CONVERT( VARCHAR, s.[complete-dt], 103) + ' ' + LEFT(CONVERT(VARCHAR, s.[complete-tm]), 2) + ':' + RIGHT(CONVERT(VARCHAR, s.[complete-tm]), 2) AS [completeDateTime] " +
+                                         ", CASE WHEN dbo.SL_Parts_List2(s.[service-no]) = '' then 'No parts used' ELSE dbo.SL_Parts_List2(s.[service-no]) END AS                                                                                                             [parts] " +
+                                    "FROM service AS s " +
+                                    "INNER JOIN item AS i ON i.[item-no] = s.[item-no] " +
+                                    "INNER JOIN item2 AS i2 ON i2.[item-no] = s.[item-no] " +
+                                    "WHERE s.[serial-no] = '" + txtSerialNo.Text + "' " +
+                                      "AND s.[cust-no] = '" + custNo + "' " +
+                                      "AND s.[so-status] LIKE 'F90' " +
+                                      "AND s.[entry-date] >= DATEADD(m, -6, GETDATE()) " +
+                                    "ORDER BY [entry-date] DESC";
+            gvServiceH.DataSource = GetData(getServiceHCmd);
+            gvServiceH.DataBind();
+
+            string getTonerHCmd = "SELECT s.[service-no] AS                             [serviceNo] " +
+                                       ", dbo.SL_Parts_List2(s.[service-no]) AS      [toners] " +
+                                       ", CONVERT( VARCHAR, s.[invoice-date], 103) AS   [invoiceDate] " +
+                                    "FROM service AS s " +
+                                    "WHERE s.[serial-no] = 'M6201800084' " +
+                                      "AND s.[cust-no] = 'KE074700' " +
+                                      "AND s.[so-status] LIKE 'P90' " +
+                                      "AND s.[entry-date] >= DATEADD(m, -6, GETDATE())  " +
+                                    "ORDER BY s.[invoice-date] DESC ";
+            gvTonerH.DataSource = GetData(getTonerHCmd);
+            gvTonerH.DataBind();
+
+            string getMeterHCmd = "SELECT [invoice-no] AS                                               [invoiceNo] " +
+                                        ", MAX(case when meter_type like 'B%' then [copies] else 0 end) [bw] " +
+                                        ", MAX(case when meter_type like 'C%' then [copies] else 0 end) [col] " +
+                                        ", CONVERT( VARCHAR, [invoice-date], 103)                       [invoiceDate] " +
+                                  "FROM [meter-card] " +
+                                  "WHERE [serial-no] = '" + txtSerialNo.Text + "' " +
+                                    "AND [invoice-date] >= DATEADD(m, -6, GETDATE())  " +
+                                  "GROUP BY [invoice-no] " +
+                                         ", [invoice-date] " +
+                                  "ORDER BY [invoice-date] DESC";
+            gvMeterH.DataSource = GetData(getMeterHCmd);
+            gvMeterH.DataBind();
         }
         protected string GetCustomerInfo(string custNo, string custName, string BRN)
         {
@@ -173,7 +248,6 @@ namespace SerialChecker
             WebRequest request = WebRequest.Create(url);
             request.Credentials = CredentialCache.DefaultCredentials;
             HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-            //Console.WriteLine(response.StatusDescription);
             Stream dataStream = response.GetResponseStream();
             StreamReader reader = new StreamReader(dataStream);
             string responseFromServer = reader.ReadToEnd();
@@ -295,7 +369,6 @@ namespace SerialChecker
 
         protected void btnNoMatch_Click(object sender, EventArgs e)
         {
-            GetMifInfo();
             Wizard1.MoveTo(WizardStep4);
         }
     }

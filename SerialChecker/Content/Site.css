@@ -29,3 +29,169 @@ textarea {
         padding: 0;
     }
 }
+
+.wrap{
+    white-space: normal;
+}
+
+
+#wizHeader li :first-of-type {
+            border-bottom-left-radius: 4px;
+            border-top-left-radius: 4px;
+        }
+
+        #wizHeader li .prevStep {
+            background-color: #355264;
+        }
+
+            #wizHeader li .prevStep:after {
+                border-left-color: #355264 !important;
+            }
+
+        #wizHeader li .currentStep {
+            background-color: #253b4a;
+        }
+
+            #wizHeader li .currentStep:after {
+                border-left-color: #253b4a !important;
+            }
+
+        #wizHeader li .nextStep {
+            background-color: #C2C2C2;
+        }
+
+            #wizHeader li .nextStep:after {
+                border-left-color: #C2C2C2 !important;
+            }
+
+        #wizHeader {
+            list-style: none;
+            overflow: hidden;
+            margin: 0px;
+            padding: 0px;
+        }
+
+            #wizHeader li {
+                float: left;
+            }
+
+                #wizHeader li a {
+                    color: white;
+                    text-decoration: none;
+                    padding: 10px 0 10px 55px;
+                    background: brown;
+                    background: hsla(34,85%,35%,1);
+                    position: relative;
+                    display: block;
+                    float: left;
+                }
+
+                    #wizHeader li a:after {
+                        content: " ";
+                        display: block;
+                        width: 0;
+                        height: 0;
+                        border-top: 50px solid transparent;
+                        border-bottom: 50px solid transparent;
+                        border-left: 30px solid hsla(34,85%,35%,1);
+                        position: absolute;
+                        top: 50%;
+                        margin-top: -50px;
+                        left: 100%;
+                        z-index: 2;
+                    }
+
+                    #wizHeader li a:before {
+                        content: " ";
+                        display: block;
+                        width: 0;
+                        height: 0;
+                        border-top: 50px solid transparent;
+                        border-bottom: 50px solid transparent;
+                        border-left: 30px solid white;
+                        position: absolute;
+                        top: 50%;
+                        margin-top: -50px;
+                        margin-left: 1px;
+                        left: 100%;
+                        z-index: 1;
+                    }
+
+                #wizHeader li:first-child a {
+                    padding-left: 10px;
+                }
+
+                #wizHeader li:last-child {
+                    padding-right: 50px;
+                }
+        /*
+                #wizHeader li a:hover {
+                    background: #FE9400;
+                }
+
+                    #wizHeader li a:hover:after {
+                        border-left-color: #FE9400 !important;
+                    }
+                    */
+        /*            
+        .WizardStep.ActiveStep {
+            background: #253b4a;
+        }
+
+        .WizardParent {
+            border-radius: 4px;
+        }
+
+        .WizardStep.ActiveStep a,
+        .WizardStep.ActiveStep a:link {
+            color: #fff;
+        }
+
+        .WizardStep.Past {
+            background: #355264;
+        }
+
+            .WizardStep.Past a,
+            .WizardStep.Past a:link {
+                color: #fff;
+            }
+
+        .WizardStep a,
+        .WizardStep a:link {
+            text-decoration: none;
+        }
+
+            .WizardStep a,
+            .WizardStep a:link,
+            .WizardStep a[disabled="disabled"],
+            .WizardStep a[disabled="disabled"]:hover {
+                color: #333;
+            }
+
+        .WizardStep:first-of-type {
+            border-bottom-left-radius: 4px;
+            border-top-left-radius: 4px;
+        }
+
+        .WizardStep:last-of-type {
+            border-bottom-right-radius: 4px;
+            border-top-right-radius: 4px;
+        }
+
+        .WizardStep.Past:before {
+            border-bottom-color: #355264;
+            border-top-color: #355264;
+        }
+
+        .WizardStep.ActiveStep:before {
+            border-bottom-color: #253b4a;
+            border-top-color: #253b4a;
+        }
+        .content {
+            height: 150px;
+            padding-top: 75px;
+            text-align: center;
+            background-color: #F9F9F9;
+            font-size: 48px;
+        }
+           */
