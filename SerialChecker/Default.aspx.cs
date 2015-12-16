@@ -369,7 +369,8 @@ namespace SerialChecker
                                        "AND s1.[so-status] LIKE 'F90' " +
                                        "AND s1.[entry-date] BETWEEN DATEADD(MONTH, DATEDIFF(MONTH, 0, s.[entry-date]), 0) AND datacenter.dbo.lastdayofmonth ( DATEADD(MONTH, DATEDIFF(MONTH, 0, s.[entry-date]), 0))  " +
                                        "AND s1.[service-type] NOT IN ( 'APFC', 'APFW', 'APRT-EXX', 'APRT-OTH', 'FC', 'FW', 'RT-EXXON', 'RT-O', 'RT-OTHER', 'PPP', 'APPPP', 'PM', 'RCFC', 'RCFW', 'RCRT-EXX', 'RCRT-OTH', 'SCFC', 'SCFW', 'RCPPP' )) AS [OTHERS] " +
-                                 ", CONVERT( CHAR(3), s.[entry-date], 0) + ' ' + CONVERT(CHAR(4), s.[entry-date], 120) AS                                                                                                                                                           [Month] " +
+                                 ", CONVERT( CHAR(3), s.[entry-date], 0) + ' ' + CONVERT(CHAR(4), s.[entry-date], 120) AS                                                                                                                              [Month] " +
+                                 ", count(s.[service-no]) [Total] " +
                             "FROM service AS s " +
                             "WHERE s.[serial-no] = '" + txtSerialNo.Text + "' " +
                               "AND s.[so-status] LIKE 'F90' " +
@@ -385,15 +386,15 @@ namespace SerialChecker
                     <script type='text/javascript'>  
                     function drawVisualization() {         
                     var data = google.visualization.arrayToDataTable([  
-                    ['Month', 'PM', 'EM', 'OTHERS'],");
+                    ['Month', 'PM', 'EM', 'OTHERS', 'Total'],");
                 foreach (DataRow row in dsChartData.Rows)
                 {
                     strScript.Append("['" + row["Month"] + "'," + row["PM"] + "," +
-                        row["EM"] + "," + row["OTHERS"] + "],");
+                        row["EM"] + "," + row["OTHERS"] + "," + row["Total"] + "],");
                 }
                 strScript.Remove(strScript.Length - 1, 1);
                 strScript.Append("]);");
-                strScript.Append("var options = { title : 'Service History - Last 6 Months', vAxis: {title: 'Service Count'},  hAxis: {title: 'Month'}, seriesType: 'bars'};");
+                strScript.Append("var options = { title : 'Service History - Last 6 Months', vAxis: {title: 'Service Count'},  hAxis: {title: 'Month'}, seriesType: 'bars', series: {3: {type: 'line'}}, legend: { position: 'top' } };");
                 strScript.Append(" var chart = new google.visualization.ComboChart(document.getElementById('serviceHChartDiv'));  chart.draw(data, options); } google.setOnLoadCallback(drawVisualization);");
                 strScript.Append(" </script>");
                 ltServiceHScript.Text = strScript.ToString();
@@ -436,7 +437,7 @@ namespace SerialChecker
                 }
                 strScript.Remove(strScript.Length - 1, 1);
                 strScript.Append("]);");
-                strScript.Append("var options = { title : 'Toner Supply History - Last 6 Months', vAxis: {title: 'Toner Supplied'},  hAxis: {title: 'Month'}, seriesType: 'bars'};");
+                strScript.Append("var options = { title : 'Toner Supply History - Last 6 Months', vAxis: {title: 'Toner Supplied'},  hAxis: {title: 'Month'}, seriesType: 'bars', legend: { position: 'top' } };");
                 strScript.Append(" var chart = new google.visualization.ComboChart(document.getElementById('tonerHChartDiv'));  chart.draw(data, options); } google.setOnLoadCallback(drawVisualization);");
                 strScript.Append(" </script>");
                 ltTonerHScript.Text = strScript.ToString();
@@ -486,7 +487,7 @@ namespace SerialChecker
                 }
                 strScript.Remove(strScript.Length - 1, 1);
                 strScript.Append("]);");
-                strScript.Append("var options = { title : 'Meter Reading - Last 6 Months', vAxis: {title: 'Copies'},  hAxis: {title: 'Month'}};");
+                strScript.Append("var options = { title : 'Meter Reading - Last 6 Months', vAxis: {title: 'Copies'},  hAxis: {title: 'Month'}, legend: { position: 'top' } };");
                 strScript.Append(" var chart = new google.visualization.LineChart(document.getElementById('meterHChartDiv'));  chart.draw(data, options); } google.setOnLoadCallback(drawVisualization);");
                 strScript.Append(" </script>");
                 ltMeterHScript.Text = strScript.ToString();
