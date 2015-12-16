@@ -11,9 +11,9 @@
     <asp:PlaceHolder runat="server">
         <%: Scripts.Render("~/bundles/modernizr") %>
     </asp:PlaceHolder>
+    <link href="dist/toolkit.min.css" rel="stylesheet" />
     <webopt:BundleReference runat="server" Path="~/Content/css" />
     <link href="favicon.ico" rel="shortcut icon" type="image/x-icon" />
-    <link href="dist/toolkit.min.css" rel="stylesheet" />
 
 </head>
 <body>
@@ -39,6 +39,7 @@
             </Scripts>
         </asp:ScriptManager>
         <script src="dist/toolkit.min.js"></script>
+        <script type="text/javascript" src="https://www.google.com/jsapi"></script>
 
         <div class="navbar navbar-inverse navbar-fixed-top">
             <div class="container">

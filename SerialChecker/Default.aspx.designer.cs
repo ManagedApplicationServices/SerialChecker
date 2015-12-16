@@ -130,6 +130,15 @@ namespace SerialChecker {
         protected global::System.Web.UI.WebControls.Repeater gvMifInfo;
         
         /// <summary>
+        /// ltServiceHScript control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal ltServiceHScript;
+        
+        /// <summary>
         /// gvServiceH control.
         /// </summary>
         /// <remarks>
@@ -139,6 +148,15 @@ namespace SerialChecker {
         protected global::System.Web.UI.WebControls.Repeater gvServiceH;
         
         /// <summary>
+        /// ltTonerHScript control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal ltTonerHScript;
+        
+        /// <summary>
         /// gvTonerH control.
         /// </summary>
         /// <remarks>
@@ -146,6 +164,15 @@ namespace SerialChecker {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Repeater gvTonerH;
+        
+        /// <summary>
+        /// ltMeterHScript control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal ltMeterHScript;
         
         /// <summary>
         /// gvMeterH control.

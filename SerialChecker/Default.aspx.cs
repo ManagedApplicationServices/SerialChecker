@@ -7,8 +7,10 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
+using System.Text;
 using System.Web;
 using System.Web.Script.Serialization;
+using System.Web.Services;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
@@ -126,25 +128,25 @@ namespace SerialChecker
             string AdvanceCustName = hfAdvanceCustName.Value;
             string AdvanceBRN = hfAdvanceBRN.Value;
 
-            GetMifInfo(AdvanceCustNo);
+            GetMifInfo();
 
             Wizard1.MoveTo(WizardStep4);
 
             if (CRMBRN != AdvanceBRN)
             {
-                Email(AdvanceCustNo, AdvanceCustName, CRMBRN);
+                //Email(AdvanceCustNo, AdvanceCustName, CRMBRN);
             }
         }
         protected void Email(string custNo, string custName, string brn)
         {
             MailMessage mailMessage = new MailMessage();
             mailMessage.To.Add("zhaidy@ricoh.sg");
-            mailMessage.To.Add("AdrianLim@ricoh.sg");
+            //mailMessage.To.Add("AdrianLim@ricoh.sg");
             mailMessage.From = new MailAddress("rspops@ricoh.sg", "Managed Application Services");
             mailMessage.Subject = "Customer BRN Update [RESTRICTED]";
             mailMessage.IsBodyHtml = true;
             mailMessage.Body = "<span>Hi All,</span></br></br>" +
-                               "<span>Please update the BRN number accordingly.</span></br></br>" +
+                               "<span>Please update the BRN number accordingly in Advance.</span></br></br>" +
                                "<table>" +
                                   "<tr>" +
                                     "<td><span>Customer Number : </span></td>" +
@@ -168,7 +170,7 @@ namespace SerialChecker
             SmtpClient smtpClient = new SmtpClient("172.19.107.45");
             smtpClient.Send(mailMessage);
         }
-        protected void GetMifInfo(string custNo)
+        protected void GetMifInfo()
         {
             string getMifInfoCmd = "SELECT mt.[serial-no] AS                                [serialNo] " +
                                         ", mt.[contract-no] AS                              [contractNo] " +
@@ -219,8 +221,8 @@ namespace SerialChecker
                                          ", (select top 1 smh.[meter_reading] from smeter_history smh " +
                                              "where smh.[service_no] = s.[service-no] and " + 
                                                    "smh.[meter_type] like 'B%') AS                                                                                                            [BWReading] " +
-                                         ", (select top 1 smh.[meter_reading] from smeter_history smh " +
-                                             "where smh.[service_no] = s.[service-no] and smh.[meter_type] like 'C%') AS                                                                      [COLReading] " +
+                                         ", isnull((select top 1 smh.[meter_reading] from smeter_history smh " +
+                                             "where smh.[service_no] = s.[service-no] and smh.[meter_type] like 'C%'),0) AS                                                                      [COLReading] " +
                                          ", CONVERT( VARCHAR, s.[entry-date], 103) AS                                                                                                         [entryDate] " +
                                          ", CONVERT( VARCHAR, s.[entry-date], 103) + ' ' + LEFT(CONVERT(VARCHAR, s.[entry-time]), 2) + ':' + RIGHT(CONVERT(VARCHAR, s.[entry-time]), 2) AS    [entryDateTime] " +
                                          ", CONVERT( VARCHAR, s.[complete-dt], 103) + ' ' + LEFT(CONVERT(VARCHAR, s.[complete-tm]), 2) + ':' + RIGHT(CONVERT(VARCHAR, s.[complete-tm]), 2) AS [completeDateTime] " +
@@ -229,7 +231,6 @@ namespace SerialChecker
                                     "INNER JOIN item AS i ON i.[item-no] = s.[item-no] " +
                                     "INNER JOIN item2 AS i2 ON i2.[item-no] = s.[item-no] " +
                                     "WHERE s.[serial-no] = '" + txtSerialNo.Text + "' " +
-                                      "AND s.[cust-no] = '" + custNo + "' " +
                                       "AND s.[so-status] LIKE 'F90' " +
                                       "AND s.[entry-date] >= DATEADD(m, -6, GETDATE()) " +
                                     "ORDER BY [entry-date] DESC";
@@ -240,10 +241,9 @@ namespace SerialChecker
                                        ", dbo.SL_Parts_List2(s.[service-no]) AS      [toners] " +
                                        ", CONVERT( VARCHAR, s.[invoice-date], 103) AS   [invoiceDate] " +
                                     "FROM service AS s " +
-                                    "WHERE s.[serial-no] = 'M6201800084' " +
-                                      "AND s.[cust-no] = 'KE074700' " +
+                                    "WHERE s.[serial-no] = '" + txtSerialNo.Text + "' " +
                                       "AND s.[so-status] LIKE 'P90' " +
-                                      "AND s.[entry-date] >= DATEADD(m, -6, GETDATE())  " +
+                                      "AND s.[invoice-date] >= DATEADD(m, -6, GETDATE())  " +
                                     "ORDER BY s.[invoice-date] DESC ";
             gvTonerH.DataSource = GetData(getTonerHCmd);
             gvTonerH.DataBind();
@@ -260,6 +260,10 @@ namespace SerialChecker
                                   "ORDER BY [invoice-date] DESC";
             gvMeterH.DataSource = GetData(getMeterHCmd);
             gvMeterH.DataBind();
+
+            BindServiceHChart();
+            BindTonerHChart();
+            BindMeterHChart();
         }
         protected string GetCustomerInfo(string custNo, string custName, string BRN)
         {
@@ -339,10 +343,162 @@ namespace SerialChecker
         {
             Response.Redirect(Request.RawUrl);
         }
-
         protected void btnNoMatch_Click(object sender, EventArgs e)
         {
             Wizard1.MoveTo(WizardStep4);
+        }
+        protected void BindServiceHChart()
+        {
+            DataTable dsChartData = new DataTable();
+            StringBuilder strScript = new StringBuilder();
+            string query = "SELECT ( SELECT COUNT(s1.[service-no]) " +
+                                     "FROM service AS s1 " +
+                                     "WHERE s1.[serial-no] = '" + txtSerialNo.Text + "' " +
+                                       "AND s1.[so-status] LIKE 'F90' " +
+                                       "AND s1.[entry-date] BETWEEN DATEADD(MONTH, DATEDIFF(MONTH, 0, s.[entry-date]), 0) AND datacenter.dbo.lastdayofmonth ( DATEADD(MONTH, DATEDIFF(MONTH, 0, s.[entry-date]), 0)) " +
+                                       "AND s1.[service-type] IN ( 'APFC', 'APFW', 'APRT-EXX', 'APRT-OTH', 'FC', 'FW', 'RT-EXXON', 'RT-O', 'RT-OTHER', 'PPP', 'APPPP' )) AS                                                                            [EM] " +
+                                 ", ( SELECT COUNT(s1.[service-no])  " +
+                                     "FROM service AS s1 " +
+                                     "WHERE s1.[serial-no] = '" + txtSerialNo.Text + "' " +
+                                       "AND s1.[so-status] LIKE 'F90' " +
+                                       "AND s1.[entry-date] BETWEEN DATEADD(MONTH, DATEDIFF(MONTH, 0, s.[entry-date]), 0) AND datacenter.dbo.lastdayofmonth ( DATEADD(MONTH, DATEDIFF(MONTH, 0, s.[entry-date]), 0)) " +
+                                       "AND s1.[service-type] IN ( 'PM', 'RCFC', 'RCFW', 'RCRT-EXX', 'RCRT-OTH', 'SCFC', 'SCFW', 'RCPPP' )) AS                                                                                                         [PM] " +
+                                 ", ( SELECT COUNT(s1.[service-no])  " +
+                                     "FROM service AS s1 " +
+                                     "WHERE s1.[serial-no] = '" + txtSerialNo.Text + "' " +
+                                       "AND s1.[so-status] LIKE 'F90' " +
+                                       "AND s1.[entry-date] BETWEEN DATEADD(MONTH, DATEDIFF(MONTH, 0, s.[entry-date]), 0) AND datacenter.dbo.lastdayofmonth ( DATEADD(MONTH, DATEDIFF(MONTH, 0, s.[entry-date]), 0))  " +
+                                       "AND s1.[service-type] NOT IN ( 'APFC', 'APFW', 'APRT-EXX', 'APRT-OTH', 'FC', 'FW', 'RT-EXXON', 'RT-O', 'RT-OTHER', 'PPP', 'APPPP', 'PM', 'RCFC', 'RCFW', 'RCRT-EXX', 'RCRT-OTH', 'SCFC', 'SCFW', 'RCPPP' )) AS [OTHERS] " +
+                                 ", CONVERT( CHAR(3), s.[entry-date], 0) + ' ' + CONVERT(CHAR(4), s.[entry-date], 120) AS                                                                                                                                                           [Month] " +
+                            "FROM service AS s " +
+                            "WHERE s.[serial-no] = '" + txtSerialNo.Text + "' " +
+                              "AND s.[so-status] LIKE 'F90' " +
+                              "AND s.[entry-date] >= DATEADD(m, -6, GETDATE()) " +
+                            "GROUP BY DATEADD(MONTH, DATEDIFF(MONTH, 0, s.[entry-date]), 0) " +
+                            ", CONVERT( CHAR(3), s.[entry-date], 0) + ' ' + CONVERT(CHAR(4), s.[entry-date], 120) " +
+                            "order by DATEADD(MONTH, DATEDIFF(MONTH, 0, s.[entry-date]), 0)";
+            try
+            {
+                dsChartData = GetData(query);
+                strScript.Append(@"<script type='text/javascript'>  
+                    google.load('visualization', '1', {packages: ['corechart']});</script>  
+                    <script type='text/javascript'>  
+                    function drawVisualization() {         
+                    var data = google.visualization.arrayToDataTable([  
+                    ['Month', 'PM', 'EM', 'OTHERS'],");
+                foreach (DataRow row in dsChartData.Rows)
+                {
+                    strScript.Append("['" + row["Month"] + "'," + row["PM"] + "," +
+                        row["EM"] + "," + row["OTHERS"] + "],");
+                }
+                strScript.Remove(strScript.Length - 1, 1);
+                strScript.Append("]);");
+                strScript.Append("var options = { title : 'Service History - Last 6 Months', vAxis: {title: 'Service Count'},  hAxis: {title: 'Month'}, seriesType: 'bars'};");
+                strScript.Append(" var chart = new google.visualization.ComboChart(document.getElementById('serviceHChartDiv'));  chart.draw(data, options); } google.setOnLoadCallback(drawVisualization);");
+                strScript.Append(" </script>");
+                ltServiceHScript.Text = strScript.ToString();
+            }
+            catch
+            {
+            }
+            finally
+            {
+                dsChartData.Dispose();
+                strScript.Clear();
+            }
+        }
+        protected void BindTonerHChart()
+        {
+            DataTable dsChartData = new DataTable();
+            StringBuilder strScript = new StringBuilder();
+            string query = "SELECT SUM(sl.[qty-shipped]) AS                                                                   [Toner]" +
+                                 ", CONVERT( CHAR(3), s.[invoice-date], 0) + ' ' + CONVERT(CHAR(4), s.[invoice-date], 120) AS [Month]" +
+                            "FROM service AS s " +
+                            "INNER JOIN [service-line] AS sl ON sl.[service-no] = s.[service-no] " +
+                            "WHERE s.[serial-no] = '" + txtSerialNo.Text + "' " +
+                              "AND s.[so-status] LIKE 'P90' " +
+                              "AND s.[invoice-date] >= DATEADD(m, -6, GETDATE()) " +
+                            "GROUP BY DATEADD(MONTH, DATEDIFF(MONTH, 0, s.[invoice-date]), 0) " +
+                                   ", CONVERT( CHAR(3), s.[invoice-date], 0) + ' ' + CONVERT(CHAR(4), s.[invoice-date], 120) " +
+                            "order by DATEADD(MONTH, DATEDIFF(MONTH, 0, s.[invoice-date]), 0)";
+            try
+            {
+                dsChartData = GetData(query);
+                strScript.Append(@"<script type='text/javascript'>  
+                    google.load('visualization', '1', {packages: ['corechart']});</script>  
+                    <script type='text/javascript'>  
+                    function drawVisualization() {         
+                    var data = google.visualization.arrayToDataTable([  
+                    ['Month', 'Toner Supplied'],");
+                foreach (DataRow row in dsChartData.Rows)
+                {
+                    strScript.Append("['" + row["Month"] + "'," + row["Toner"] + "],");
+                }
+                strScript.Remove(strScript.Length - 1, 1);
+                strScript.Append("]);");
+                strScript.Append("var options = { title : 'Toner Supply History - Last 6 Months', vAxis: {title: 'Toner Supplied'},  hAxis: {title: 'Month'}, seriesType: 'bars'};");
+                strScript.Append(" var chart = new google.visualization.ComboChart(document.getElementById('tonerHChartDiv'));  chart.draw(data, options); } google.setOnLoadCallback(drawVisualization);");
+                strScript.Append(" </script>");
+                ltTonerHScript.Text = strScript.ToString();
+            }
+            catch
+            {
+            }
+            finally
+            {
+                dsChartData.Dispose();
+                strScript.Clear();
+            }
+        }
+        protected void BindMeterHChart()
+        {
+            DataTable dsChartData = new DataTable();
+            StringBuilder strScript = new StringBuilder();
+            string query = "SELECT SUM(CASE " +
+                                           "WHEN meter_type LIKE 'B%' " +
+                                           "THEN [copies] " +
+                                           "ELSE 0 " +
+                                       "END) AS [BW] " +
+                                 ", SUM(CASE " +
+                                           "WHEN meter_type LIKE 'C%' " +
+                                           "THEN [copies] " +
+                                           "ELSE 0 " +
+                                       "END) AS [COL] " +
+                                 ", CONVERT( CHAR(3), [invoice-date], 0) + ' ' + CONVERT(CHAR(4), [invoice-date], 120) [Month]" +
+                            "FROM [meter-card] " +
+                            "WHERE [serial-no] = '" + txtSerialNo.Text + "' " +
+                              "AND [invoice-date] >= DATEADD(m, -6, GETDATE())  " +
+                            "GROUP BY DATEADD(MONTH, DATEDIFF(MONTH, 0, [invoice-date]), 0)  " +
+                                   ", CONVERT( CHAR(3), [invoice-date], 0) + ' ' + CONVERT(CHAR(4), [invoice-date], 120)  " +
+                            "ORDER BY DATEADD(MONTH, DATEDIFF(MONTH, 0, [invoice-date]), 0)";
+            try
+            {
+                dsChartData = GetData(query);
+                strScript.Append(@"<script type='text/javascript'>  
+                    google.load('visualization', '1', {packages: ['corechart']});</script>  
+                    <script type='text/javascript'>  
+                    function drawVisualization() {         
+                    var data = google.visualization.arrayToDataTable([  
+                    ['Month', 'BW Copies', 'Color Copies'],");
+                foreach (DataRow row in dsChartData.Rows)
+                {
+                    strScript.Append("['" + row["Month"] + "'," + row["BW"] + "," + row["COL"] + "],");
+                }
+                strScript.Remove(strScript.Length - 1, 1);
+                strScript.Append("]);");
+                strScript.Append("var options = { title : 'Meter Reading - Last 6 Months', vAxis: {title: 'Copies'},  hAxis: {title: 'Month'}};");
+                strScript.Append(" var chart = new google.visualization.LineChart(document.getElementById('meterHChartDiv'));  chart.draw(data, options); } google.setOnLoadCallback(drawVisualization);");
+                strScript.Append(" </script>");
+                ltMeterHScript.Text = strScript.ToString();
+            }
+            catch
+            {
+            }
+            finally
+            {
+                dsChartData.Dispose();
+                strScript.Clear();
+            }
         }
     }
     

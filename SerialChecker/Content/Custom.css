@@ -1,0 +1,36 @@
+﻿.line-separator {
+    height: 1px;
+    background: #eeeeee;
+    border-bottom: 1px solid #eeeeee;
+    margin-bottom: 5px;
+}
+
+.wrap{
+    white-space: normal;
+}
+
+
+[class*='-dark'] {
+	background-color:#02243C;
+    color:#f0f0f0;
+}
+[class*='-light'] {
+	background-color:#f9f9f9;
+    color:#999;
+}
+[class*='-blue'] {
+	background-color:#5195ce;
+    color:#fff;
+}
+[class*='-apple'] {
+	background-color:#005DB3;
+    color:#f8f8f8;
+}
+[class*='-gray'] {
+	background-color:#e6e6e6;
+    color:#666;
+}
+[class*='-green'] {
+	background-color:#5BC236;
+    color:#fff;
+}

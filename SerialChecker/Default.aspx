@@ -116,15 +116,27 @@
                     </asp:Repeater>
                     <div class="row">
                         <div class="col-md-4">
+                        </div>
+                        <div class="col-md-4">
+                        </div>
+                        <div class="col-md-4">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
                             <div class="panel panel-default">
                                 <div class="panel-heading">
                                     <h4>Service History</h4>
                                 </div>
                                 <div class="panel-body">
-                                    <ul class="list-group">
+                                    <div>
+                                        <asp:Literal ID="ltServiceHScript" runat="server"></asp:Literal>
+                                        <div id="serviceHChartDiv"></div>
+                                    </div>
+                                    <ul class="list-group p-t-md">
                                         <asp:Repeater runat="server" ID="gvServiceH">
                                             <ItemTemplate>
-                                                <a class="list-group-item" href='<%# "#" + Eval("serviceNo") %>' data-toggle="collapse"
+                                                <a class="list-group-item text text-lg" href='<%# "#" + Eval("serviceNo") %>' data-toggle="collapse"
                                                     aria-expanded="false" aria-controls='<%# Eval("serviceNo") %>'>
                                                     <span><%# Eval("serviceNo") %></span><small class="pull-right text-muted"><%# Eval("entryDate") %></small>
                                                 </a>
@@ -166,23 +178,25 @@
                                     <h4>Toner Supply History</h4>
                                 </div>
                                 <div class="panel-body">
-                                    <ul class="list-group">
+                                    <div>
+                                        <asp:Literal ID="ltTonerHScript" runat="server"></asp:Literal>
+                                        <div id="tonerHChartDiv"></div>
+                                    </div>
+                                    <ul class="list-group p-t-md">
                                         <asp:Repeater runat="server" ID="gvTonerH">
                                             <ItemTemplate>
-                                                <a class="list-group-item" href='<%# "#" + Eval("serviceNo") %>' data-toggle="collapse"
-                                                    aria-expanded="false" aria-controls='<%# Eval("serviceNo") %>'>
-                                                    <span><%# Eval("serviceNo") %></span><small class="pull-right text-muted"><%# Eval("invoiceDate") %></small>
-                                                </a>
-                                                <div class="collapse" id='<%# Eval("serviceNo") %>'>
-                                                    <div class="well">
+                                                <li class="list-group-item">
+                                                    <h4 class="list-group-item-heading">
+                                                        <span><%# Eval("serviceNo") %></span><small class="pull-right text-muted"><%# Eval("invoiceDate") %></small>
+                                                    </h4>
+                                                    <div class="line-separator"></div>
+                                                    <div class="list-group-item-text">
                                                         <dl class="dl">
                                                             <dt>Toner Delivered</dt>
                                                             <dd><span><%# Eval("toners") %></span></dd>
-                                                            <dt>Invoice Date</dt>
-                                                            <dd><span><%# Eval("invoiceDate") %></span></dd>
                                                         </dl>
                                                     </div>
-                                                </div>
+                                                </li>
                                             </ItemTemplate>
                                         </asp:Repeater>
                                     </ul>
@@ -195,15 +209,19 @@
                                     <h4>Meter Reading History</h4>
                                 </div>
                                 <div class="panel-body">
-                                    <ul class="list-group">
+                                    <div>
+                                        <asp:Literal ID="ltMeterHScript" runat="server"></asp:Literal>
+                                        <div id="meterHChartDiv"></div>
+                                    </div>
+                                    <ul class="list-group p-t-md">
                                         <asp:Repeater runat="server" ID="gvMeterH">
                                             <ItemTemplate>
-                                                <a class="list-group-item" href='<%# "#" + Eval("invoiceNo") %>' data-toggle="collapse"
-                                                    aria-expanded="false" aria-controls='<%# Eval("invoiceNo") %>'>
-                                                    <span><%# Eval("invoiceNo") %></span><small class="pull-right text-muted"><%# Eval("invoiceDate") %></small>
-                                                </a>
-                                                <div class="collapse" id='<%# Eval("invoiceNo") %>'>
-                                                    <div class="well">
+                                                <li class="list-group-item">
+                                                    <h4 class="list-group-item-heading">
+                                                        <span><%# Eval("invoiceNo") %></span><small class="pull-right text-muted"><%# Eval("invoiceDate") %></small>
+                                                    </h4>
+                                                    <div class="line-separator"></div>
+                                                    <div class="list-group-item-text">
                                                         <dl class="dl-horizontal">
                                                             <dt>BW Copies</dt>
                                                             <dd><span><%# Eval("bw") %></span></dd>
@@ -211,7 +229,7 @@
                                                             <dd><span><%# Eval("col") %></span></dd>
                                                         </dl>
                                                     </div>
-                                                </div>
+                                                </li>
                                             </ItemTemplate>
                                         </asp:Repeater>
                                     </ul>
