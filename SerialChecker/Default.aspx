@@ -64,7 +64,7 @@
                         </asp:Repeater>
                     </ul>
                 </asp:WizardStep>
-                <asp:WizardStep ID="WizardStep3" runat="server" Title="Selet Customer From CRM">
+                <asp:WizardStep ID="WizardStep3" runat="server" Title="Select Customer From CRM">
                     <div role="alert" runat="server" id="divCRMCustomer">
                         <strong>No record found..</strong>
                     </div>
