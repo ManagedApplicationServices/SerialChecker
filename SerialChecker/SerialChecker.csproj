@@ -99,6 +99,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="About.aspx" />
+    <Content Include="Admin\Users.aspx" />
     <Content Include="Contact.aspx" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
@@ -325,6 +326,7 @@
     <Content Include="less\variables.less" />
     <Content Include="package.json" />
     <Content Include="WrongBRN.aspx" />
+    <Content Include="Admin\Web.config" />
     <None Include="Properties\PublishProfiles\SerialChecker.pubxml" />
     <Content Include="README.md" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
@@ -375,6 +377,13 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Admin\Users.aspx.cs">
+      <DependentUpon>Users.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Admin\Users.aspx.designer.cs">
+      <DependentUpon>Users.aspx</DependentUpon>
+    </Compile>
     <Compile Include="WrongBRN.aspx.cs">
       <DependentUpon>WrongBRN.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
