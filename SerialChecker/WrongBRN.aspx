@@ -6,6 +6,10 @@
             <h1><%= Request.QueryString["name"] %></h1> 
         </div>
         <div class="panel-body">
+            <div role="alert" runat="server" id="divMsg" class="hidden">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <strong>Record submitted</strong>
+            </div>
             <div class="form-inline">
                 <div class="form-group" id="divBrn" runat="server">
                     <label for="txtBrn" class="sr-only">Enter the correct BRN</label>

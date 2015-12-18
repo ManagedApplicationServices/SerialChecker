@@ -134,7 +134,7 @@ namespace SerialChecker
 
             if (CRMBRN != AdvanceBRN)
             {
-                //Email(AdvanceCustNo, AdvanceCustName, CRMBRN);
+                Email(AdvanceCustNo, AdvanceCustName, CRMBRN);
             }
         }
         protected void Email(string custNo, string custName, string brn)
@@ -164,7 +164,7 @@ namespace SerialChecker
                                     "<td>" +
                                   "</tr>" +
                                "</table></br>" +
-                               "<span><a href='http://172.19.107.84/SerialChecker/WrongBRN?name=" + custName + "'>Click me if the BRN is not correct</a></span></br></br>" +
+                               "<span><a href='http://mobileservice.ricoh.sg/SerialChecker/WrongBRN?name=" + custName + "&custNo=" + custNo + "&brn=" + brn + "'>Click me if the BRN is not correct</a></span></br></br>" +
                                "<span>Regards, </span></br>" +
                                "<span>Managed Application Services";
             SmtpClient smtpClient = new SmtpClient("172.19.107.45");

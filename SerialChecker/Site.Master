@@ -58,7 +58,7 @@
                         <li><a runat="server" href="~/Contact">Contact</a></li>--%>
                     </ul>
                     <p class="nav navbar-text navbar-right">Hello,
-                        <asp:LoginName runat="server" />
+                        <%= fullname %>
                     </p>
                 </div>
             </div>
