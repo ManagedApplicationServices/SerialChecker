@@ -81,8 +81,9 @@ namespace SerialChecker
             string custNo = hfCustNo.Value;
             string custName = hfName.Value;
             string BRN = hfBRN.Value;
+            string adName = Page.User.Identity.Name.Replace(@"RSP\", "");
 
-            string CRMCustomerInfo = GetCustomerInfo(custNo, custName, BRN);
+            string CRMCustomerInfo = GetCustomerInfo(custNo, custName, BRN, adName);
 
             if (CRMCustomerInfo != "Customer not found.")
             {
@@ -265,9 +266,9 @@ namespace SerialChecker
             BindTonerHChart();
             BindMeterHChart();
         }
-        protected string GetCustomerInfo(string custNo, string custName, string BRN)
+        protected string GetCustomerInfo(string custNo, string custName, string BRN, string adName)
         {
-            string url = "https://spangular.ricohmds.sg/api/crm/clients?auth_token=A12345678&code=" + custNo + "&name=" + custName + "&brn=" + BRN;
+            string url = "https://spangular.ricohmds.sg/api/crm/clients?auth_token=A12345678&code=" + custNo + "&name=" + custName + "&brn=" + BRN + "&ad_name=" + adName;
             WebRequest request = WebRequest.Create(url);
             request.Credentials = CredentialCache.DefaultCredentials;
             HttpWebResponse response = (HttpWebResponse)request.GetResponse();
