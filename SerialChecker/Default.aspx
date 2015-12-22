@@ -1,9 +1,12 @@
-﻿<%@ Page Title="Serial Checker" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Default.aspx.cs" Inherits="SerialChecker._Default" EnableEventValidation="false" %>
+﻿<%@ Page Title="Serial Checker" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true"
+    CodeBehind="Default.aspx.cs" Inherits="SerialChecker._Default" EnableEventValidation="false" %>
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
     <div>
-        <asp:Wizard ID="Wizard1" runat="server" DisplaySideBar="false" CssClass="col-sm-12" StepNextButtonStyle-CssClass="hidden" StepPreviousButtonStyle-CssClass="hidden"
-            FinishPreviousButtonStyle-CssClass="hidden" StartNextButtonStyle-CssClass="hidden" FinishCompleteButtonStyle-CssClass="hidden" OnFinishButtonClick="Wizard1_FinishButtonClick">
+        <asp:Wizard ID="Wizard1" runat="server" DisplaySideBar="false" CssClass="col-sm-12"
+            StepNextButtonStyle-CssClass="hidden" StepPreviousButtonStyle-CssClass="hidden"
+            FinishPreviousButtonStyle-CssClass="hidden" StartNextButtonStyle-CssClass="hidden"
+            FinishCompleteButtonStyle-CssClass="hidden" OnFinishButtonClick="Wizard1_FinishButtonClick">
             <HeaderTemplate>
                 <div>
                     <ul class="steps">
@@ -27,7 +30,8 @@
                                         <label for="txtSerialNo" class="sr-only">Serial Number</label>
                                         <asp:TextBox ID="txtSerialNo" runat="server" CssClass="form-control input-lg" placeholder="Serial Number"></asp:TextBox>
                                     </div>
-                                    <asp:LinkButton ID="btnSearch" runat="server" CssClass="btn btn-lg btn-primary-outline" OnClick="btnSearch_Click">
+                                    <asp:LinkButton ID="btnSearch" runat="server" CssClass="btn btn-lg btn-primary-outline"
+                                        OnClick="btnSearch_Click">
                                     <span class="icon icon-magnifying-glass"></span> 
                                     Search
                                     </asp:LinkButton>
@@ -146,7 +150,8 @@
                                                             <dt>Service Type</dt>
                                                             <dd><span><%# Eval("typeOfService") %></span></dd>
                                                             <dt>Technician</dt>
-                                                            <dd><span><%# Eval("techCode") %> - <%# Eval("techName") %> - <%# Eval("team") %></span></dd>
+                                                            <dd><span><%# Eval("techCode") %> - <%# Eval("techName") %> - <%# Eval("team") %></span>
+                                                            </dd>
                                                             <dt>Problem Description</dt>
                                                             <dd><span><%# Eval("problemDesc") %></span></dd>
                                                             <dt>Cause Description</dt>
@@ -240,13 +245,15 @@
                 </asp:WizardStep>
             </WizardSteps>
             <StepNavigationTemplate>
-                <asp:LinkButton ID="btnPrevious" runat="server" CssClass="btn btn-danger-outline" CommandName="MovePrevious" CausesValidation="false">
+                <asp:LinkButton ID="btnPrevious" runat="server" CssClass="btn btn-danger-outline"
+                    CommandName="MovePrevious" CausesValidation="false">
                     <span class="icon icon-back"></span>
                     Back
                 </asp:LinkButton>
             </StepNavigationTemplate>
             <FinishNavigationTemplate>
-                <asp:LinkButton ID="btnFinish" runat="server" CssClass="btn btn-success-outline" CommandName="MoveComplete" CausesValidation="false">
+                <asp:LinkButton ID="btnFinish" runat="server" CssClass="btn btn-success-outline"
+                    CommandName="MoveComplete" CausesValidation="false">
                     <span class="icon icon-home"></span>
                     Finish
                 </asp:LinkButton>
