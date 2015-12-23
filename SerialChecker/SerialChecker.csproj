@@ -152,6 +152,7 @@
     <Content Include="docs\login\index.html" />
     <Content Include="docs\notifications\index.html" />
     <Content Include="docs\profile\index.html" />
+    <Content Include="ErrorPage.aspx" />
     <Content Include="gulpfile.js" />
     <Content Include="Icon\android-chevron-right-512-000000.png" />
     <Content Include="Icon\Arrow-Down.png" />
@@ -384,6 +385,13 @@
     </Compile>
     <Compile Include="Admin\Users.aspx.designer.cs">
       <DependentUpon>Users.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ErrorPage.aspx.cs">
+      <DependentUpon>ErrorPage.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ErrorPage.aspx.designer.cs">
+      <DependentUpon>ErrorPage.aspx</DependentUpon>
     </Compile>
     <Compile Include="WrongBRN.aspx.cs">
       <DependentUpon>WrongBRN.aspx</DependentUpon>
