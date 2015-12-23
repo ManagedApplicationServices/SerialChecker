@@ -58,7 +58,7 @@
                         <li><a runat="server" href="~/Contact">Contact</a></li>--%>
                     </ul>
                     <p class="nav navbar-text navbar-right">Hello,
-                        <%= fullname %>
+                        <%= Page.User.Identity.Name.Replace(@"RSP\", "") %>
                     </p>
                 </div>
             </div>
