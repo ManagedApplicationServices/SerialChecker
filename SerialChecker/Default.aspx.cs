@@ -239,7 +239,7 @@ namespace SerialChecker
             gvServiceH.DataBind();
 
             string getTonerHCmd = "SELECT s.[service-no] AS                             [serviceNo] " +
-                                       ", dbo.SL_Parts_List2(s.[service-no]) AS      [toners] " +
+                                       ", replace(dbo.SL_Parts_List2(s.[service-no]),',','<br>') AS      [toners] " +
                                        ", CONVERT( VARCHAR, s.[invoice-date], 103) AS   [invoiceDate] " +
                                     "FROM service AS s " +
                                     "WHERE s.[serial-no] = '" + txtSerialNo.Text + "' " +
