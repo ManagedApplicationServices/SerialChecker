@@ -18,6 +18,9 @@ namespace SerialChecker
 {
     public partial class _Default : Page
     {
+        public string custName = "";
+        public string brn = "";
+        public string custNo = "";
         SqlConnection advanceConn = new SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings["advance"].ConnectionString);
         public IList<Clients> clients = new List<Clients>();
         protected void Page_Load(object sender, EventArgs e)
@@ -131,6 +134,12 @@ namespace SerialChecker
 
             GetMifInfo();
 
+            hfCustName.Value = AdvanceCustName;
+            hfCustNo.Value = AdvanceCustNo;
+            hfBRN.Value = AdvanceBRN;
+            brn = AdvanceBRN;
+            
+            mvResult.ActiveViewIndex = 0;
             Wizard1.MoveTo(WizardStep4);
 
             if (CRMBRN != AdvanceBRN)
@@ -138,10 +147,47 @@ namespace SerialChecker
                 Email(AdvanceCustNo, AdvanceCustName, CRMBRN);
             }
         }
+        protected void btnShowCust_Click(object sender, EventArgs e)
+        {
+            brn = hfBRN.Value;
+            if (brn.Length > 0)
+            {
+                string sql = "SELECT DISTINCT\n"
+                            + "       mt.[serial-no] AS [serialNo]\n"
+                            + "FROM   [datacenter].[dbo].[MIF_TDV] AS [mt]\n"
+                            + "INNER JOIN [contract-lin] AS [cl] ON [cl].[serial-no] = [mt].[serial-no] \n"
+                            + "                                     AND [cl].[item-no] = [mt].[item-no] \n"
+                            + "                                     AND [cl].[cntrct-end] >= [dbo].[todate](GETDATE())\n"
+                            + "WHERE  [mt].[cust-no] = (SELECT TOP 1 [cs].[Cust-no]\n"
+                            + "                         FROM         [Customer-Supp] AS [cs]\n"
+                            + "                         WHERE        [cs].[Business-reg] = '" + brn + "')\n"
+                            + "       AND [mt].[trans-date] = [datacenter].[dbo].[firstdayofpreviousmonth](GETDATE());";
+                gvSerialList.DataSource = GetData(sql);
+                gvSerialList.DataBind();
+            }
+            else
+            {
+                brn = "No brn found, please contact AR team to update";
+            }
+            mvResult.ActiveViewIndex = 1;
+        }
+        protected void lbSerial_Click(object sender, EventArgs e)
+        {
+            LinkButton lb = sender as LinkButton;
+            string serialNo = lb.Text;
+            txtSerialNo.Text = serialNo;
+            GetMifInfo();
+            mvResult.ActiveViewIndex = 0;
+        }
+        protected void btnBack_Click(object sender, EventArgs e)
+        {
+            mvResult.ActiveViewIndex = 0;
+        }
         protected void Email(string custNo, string custName, string brn)
         {
             MailMessage mailMessage = new MailMessage();
-            mailMessage.To.Add("zhaidy@ricoh.sg");
+            mailMessage.To.Add("ar@ricoh.sg");
+            mailMessage.CC.Add("zhaidy@ricoh.sg");
             //mailMessage.To.Add("AdrianLim@ricoh.sg");
             mailMessage.From = new MailAddress("rspops@ricoh.sg", "Managed Application Services");
             mailMessage.Subject = "Customer BRN Update [RESTRICTED]";
@@ -173,6 +219,20 @@ namespace SerialChecker
         }
         protected void GetMifInfo()
         {
+            //string getBrnSerialCount = "SELECT COUNT([mt].[serial-no]) AS [serialNo]\n"
+            //           + "FROM   [datacenter].[dbo].[MIF_TDV] AS [mt]\n"
+            //           + "INNER JOIN [contract-lin] AS [cl] ON [cl].[serial-no] = [mt].[serial-no]\n"
+            //           + "                                     AND [cl].[item-no] = [mt].[item-no]\n"
+            //           + "                                     AND [cl].[cntrct-end] >= [dbo].[todate](GETDATE())\n"
+            //           + "WHERE  [mt].[cust-no] = (SELECT TOP 1 [cs].[Cust-no]\n"
+            //           + "                         FROM         [Customer-Supp] AS [cs]\n"
+            //           + "                         WHERE        [cs].[Business-reg] = 'T15FC0083A')\n"
+            //           + "       AND [mt].[trans-date] = [datacenter].[dbo].[firstdayofpreviousmonth](GETDATE())";
+            //SqlCommand getBrnSerialCountCmd = new SqlCommand(getBrnSerialCount, advanceConn);
+            //advanceConn.Open();
+            //int count = Convert.ToInt32(getBrnSerialCountCmd.ExecuteScalar());
+            //advanceConn.Close();
+
             string getMifInfoCmd = "SELECT mt.[serial-no] AS                                [serialNo] " +
                                         ", mt.[contract-no] AS                              [contractNo] " +
                                         ", ct.[contract-typ] AS						        [contractType] " +
@@ -180,13 +240,16 @@ namespace SerialChecker
                                         ", s.[location] AS                                  [location] " +
                                         ", CONVERT( VARCHAR, s.[install-date], 103) AS      [installDate] " +
                                         ", ct.[contact] AS                                  [contact] " +
-                                        ", CONVERT( VARCHAR(10), ct.[cntrct-start], 103) AS [cntrctStart] " +
-                                        ", CONVERT( VARCHAR(10), ct.[cntrct-end], 103) AS   [cntrctEnd] " +
+                                        ", CONVERT( VARCHAR(10), cl.[cntrct-start], 103) AS [cntrctStart] " +
+                                        ", CONVERT( VARCHAR(10), cl.[cntrct-end], 103) AS   [cntrctEnd] " +
                                         ", i2.[model] AS                                    [model] " +
                                    "FROM datacenter.dbo.mif_tdv AS mt " +
                                    "INNER JOIN customer AS c ON c.[cust-no] = mt.[cust-no] " +
                                    "INNER JOIN serial AS s ON s.[serial-no] = mt.[serial-no] AND s.[item-no] = mt.[item-no] " +
                                    "INNER JOIN contract AS ct ON ct.[contract-no] = mt.[contract-no] " +
+                                   "INNER JOIN [contract-lin] AS [cl] ON [cl].[serial-no] = [s].[serial-no] " +
+                                     "AND [cl].[item-no] = [s].[item-no] " +
+                                     "AND [cl].[cntrct-end] >= [dbo].[todate](GETDATE()) " +
                                    "INNER JOIN item2 AS i2 ON i2.[item-no] = mt.[item-no] " +
                                    "WHERE mt.[trans-date] = datacenter.dbo.firstdayofpreviousmonth(getdate()) " +
                                      "AND mt.[serial-no] = '" + txtSerialNo.Text + "'";
@@ -219,9 +282,9 @@ namespace SerialChecker
                                          ", (select top 1 c.[column 2] from codes c " +
                                              "where c.[column 0] = 'SOPR' and " +
                                                    "c.[column 1] = s.[repair-code]) AS                                                                                                        [repairDesc] " +
-                                         ", (select top 1 smh.[meter_reading] from smeter_history smh " +
+                                         ", isnull((select top 1 smh.[meter_reading] from smeter_history smh " +
                                              "where smh.[service_no] = s.[service-no] and " + 
-                                                   "smh.[meter_type] like 'B%') AS                                                                                                            [BWReading] " +
+                                                   "smh.[meter_type] like 'B%'),0) AS                                                                                                            [BWReading] " +
                                          ", isnull((select top 1 smh.[meter_reading] from smeter_history smh " +
                                              "where smh.[service_no] = s.[service-no] and smh.[meter_type] like 'C%'),0) AS                                                                      [COLReading] " +
                                          ", CONVERT( VARCHAR, s.[entry-date], 103) AS                                                                                                         [entryDate] " +
@@ -268,7 +331,7 @@ namespace SerialChecker
         }
         protected string GetCustomerInfo(string custNo, string custName, string BRN, string adName)
         {
-            string url = "https://spangular.ricohmds.sg/api/crm/clients?auth_token=A12345678&code=" + custNo + "&name=" + custName + "&brn=" + BRN + "&ad_name=" + adName;
+            string url = "https://spanif.ricohmds.sg/api/crm/clients?auth_token=10bf3c81354c592b95ccffdefd644887&code=" + custNo + "&name=" + custName + "&brn=" + BRN + "&ad_name=" + adName;
             WebRequest request = WebRequest.Create(url);
             request.Credentials = CredentialCache.DefaultCredentials;
             HttpWebResponse response = (HttpWebResponse)request.GetResponse();
@@ -382,23 +445,30 @@ namespace SerialChecker
             try
             {
                 dsChartData = GetData(query);
-                strScript.Append(@"<script type='text/javascript'>  
+                if (dsChartData.Rows.Count > 0)
+                {
+                    strScript.Append(@"<script type='text/javascript'>  
                     google.load('visualization', '1', {packages: ['corechart']});</script>  
                     <script type='text/javascript'>  
                     function drawVisualization() {         
                     var data = google.visualization.arrayToDataTable([  
                     ['Month', 'PM', 'EM', 'OTHERS', 'Total'],");
-                foreach (DataRow row in dsChartData.Rows)
-                {
-                    strScript.Append("['" + row["Month"] + "'," + row["PM"] + "," +
-                        row["EM"] + "," + row["OTHERS"] + "," + row["Total"] + "],");
+                    foreach (DataRow row in dsChartData.Rows)
+                    {
+                        strScript.Append("['" + row["Month"] + "'," + row["PM"] + "," +
+                            row["EM"] + "," + row["OTHERS"] + "," + row["Total"] + "],");
+                    }
+                    strScript.Remove(strScript.Length - 1, 1);
+                    strScript.Append("]);");
+                    strScript.Append("var options = { title : 'Service History - Last 6 Months', vAxis: {title: 'Service Count'},  hAxis: {title: 'Month'}, seriesType: 'bars', series: {3: {type: 'line'}}, legend: { position: 'top' } };");
+                    strScript.Append(" var chart = new google.visualization.ComboChart(document.getElementById('serviceHChartDiv'));  chart.draw(data, options); } google.setOnLoadCallback(drawVisualization);");
+                    strScript.Append(" </script>");
+                    ltServiceHScript.Text = strScript.ToString();
                 }
-                strScript.Remove(strScript.Length - 1, 1);
-                strScript.Append("]);");
-                strScript.Append("var options = { title : 'Service History - Last 6 Months', vAxis: {title: 'Service Count'},  hAxis: {title: 'Month'}, seriesType: 'bars', series: {3: {type: 'line'}}, legend: { position: 'top' } };");
-                strScript.Append(" var chart = new google.visualization.ComboChart(document.getElementById('serviceHChartDiv'));  chart.draw(data, options); } google.setOnLoadCallback(drawVisualization);");
-                strScript.Append(" </script>");
-                ltServiceHScript.Text = strScript.ToString();
+                else
+                {
+
+                }
             }
             catch
             {
@@ -426,22 +496,29 @@ namespace SerialChecker
             try
             {
                 dsChartData = GetData(query);
-                strScript.Append(@"<script type='text/javascript'>  
+                if (dsChartData.Rows.Count > 0)
+                {
+                    strScript.Append(@"<script type='text/javascript'>  
                     google.load('visualization', '1', {packages: ['corechart']});</script>  
                     <script type='text/javascript'>  
                     function drawVisualization() {         
                     var data = google.visualization.arrayToDataTable([  
                     ['Month', 'Toner Supplied'],");
-                foreach (DataRow row in dsChartData.Rows)
-                {
-                    strScript.Append("['" + row["Month"] + "'," + row["Toner"] + "],");
+                    foreach (DataRow row in dsChartData.Rows)
+                    {
+                        strScript.Append("['" + row["Month"] + "'," + row["Toner"] + "],");
+                    }
+                    strScript.Remove(strScript.Length - 1, 1);
+                    strScript.Append("]);");
+                    strScript.Append("var options = { title : 'Toner Supply History - Last 6 Months', vAxis: {title: 'Toner Supplied'},  hAxis: {title: 'Month'}, seriesType: 'bars', legend: { position: 'top' } };");
+                    strScript.Append(" var chart = new google.visualization.ComboChart(document.getElementById('tonerHChartDiv'));  chart.draw(data, options); } google.setOnLoadCallback(drawVisualization);");
+                    strScript.Append(" </script>");
+                    ltTonerHScript.Text = strScript.ToString();
                 }
-                strScript.Remove(strScript.Length - 1, 1);
-                strScript.Append("]);");
-                strScript.Append("var options = { title : 'Toner Supply History - Last 6 Months', vAxis: {title: 'Toner Supplied'},  hAxis: {title: 'Month'}, seriesType: 'bars', legend: { position: 'top' } };");
-                strScript.Append(" var chart = new google.visualization.ComboChart(document.getElementById('tonerHChartDiv'));  chart.draw(data, options); } google.setOnLoadCallback(drawVisualization);");
-                strScript.Append(" </script>");
-                ltTonerHScript.Text = strScript.ToString();
+                else
+                {
+
+                }
             }
             catch
             {
@@ -476,22 +553,29 @@ namespace SerialChecker
             try
             {
                 dsChartData = GetData(query);
-                strScript.Append(@"<script type='text/javascript'>  
+                if (dsChartData.Rows.Count > 0)
+                {
+                    strScript.Append(@"<script type='text/javascript'>  
                     google.load('visualization', '1', {packages: ['corechart']});</script>  
                     <script type='text/javascript'>  
                     function drawVisualization() {         
                     var data = google.visualization.arrayToDataTable([  
                     ['Month', 'BW Copies', 'Color Copies'],");
-                foreach (DataRow row in dsChartData.Rows)
-                {
-                    strScript.Append("['" + row["Month"] + "'," + row["BW"] + "," + row["COL"] + "],");
+                    foreach (DataRow row in dsChartData.Rows)
+                    {
+                        strScript.Append("['" + row["Month"] + "'," + row["BW"] + "," + row["COL"] + "],");
+                    }
+                    strScript.Remove(strScript.Length - 1, 1);
+                    strScript.Append("]);");
+                    strScript.Append("var options = { title : 'Meter Reading - Last 6 Months', vAxis: {title: 'Copies'},  hAxis: {title: 'Month'}, legend: { position: 'top' } };");
+                    strScript.Append(" var chart = new google.visualization.LineChart(document.getElementById('meterHChartDiv'));  chart.draw(data, options); } google.setOnLoadCallback(drawVisualization);");
+                    strScript.Append(" </script>");
+                    ltMeterHScript.Text = strScript.ToString();
                 }
-                strScript.Remove(strScript.Length - 1, 1);
-                strScript.Append("]);");
-                strScript.Append("var options = { title : 'Meter Reading - Last 6 Months', vAxis: {title: 'Copies'},  hAxis: {title: 'Month'}, legend: { position: 'top' } };");
-                strScript.Append(" var chart = new google.visualization.LineChart(document.getElementById('meterHChartDiv'));  chart.draw(data, options); } google.setOnLoadCallback(drawVisualization);");
-                strScript.Append(" </script>");
-                ltMeterHScript.Text = strScript.ToString();
+                else
+                {
+
+                }
             }
             catch
             {
@@ -503,7 +587,7 @@ namespace SerialChecker
             }
         }
     }
-    
+
     public class Customer
     {
         public List<Clients> clients { get; set; }

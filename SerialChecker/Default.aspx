@@ -70,7 +70,7 @@
                 </asp:WizardStep>
                 <asp:WizardStep ID="WizardStep3" runat="server" Title="Select Customer From CRM">
                     <div role="alert" runat="server" id="divCRMCustomer">
-                        <strong>No record found..</strong>
+                        <strong>Customer not under users' territory..</strong>
                     </div>
                     <ul class="list-group">
                         <asp:Repeater runat="server" ID="gvCRMCustomer">
@@ -93,155 +93,174 @@
                     </ul>
                 </asp:WizardStep>
                 <asp:WizardStep ID="WizardStep4" runat="server" Title="MIF Information">
-                    <asp:Repeater runat="server" ID="gvMifInfo">
-                        <ItemTemplate>
-                            <div class="panel panel-default">
-                                <div class="panel-heading">
-                                    <h1><%# Eval("serialNo") %> <small runat="server"><%# Eval("name") %></small></h1>
-                                </div>
-                                <div class="panel-body">
-                                    <dl class="dl-horizontal">
-                                        <dt>Model</dt>
-                                        <dd><span><%# Eval("model") %></span></dd>
-                                        <dt>Installed Date</dt>
-                                        <dd><span><%# Eval("installDate") %></span></dd>
-                                        <dt>Contract</dt>
-                                        <dd><span><%# Eval("contractNo") %></span></dd>
-                                        <dd><span><%# Eval("contractType") %></span></dd>
-                                        <dd><%# Eval("cntrctStart") %> - <%# Eval("cntrctEnd") %></dd>
-                                        <dt>Contact</dt>
-                                        <dd><span><%# Eval("contact") %></span></dd>
-                                        <dt>Location</dt>
-                                        <dd><span><%# Eval("location") %></span></dd>
-                                    </dl>
-                                </div>
-                            </div>
-                        </ItemTemplate>
-                    </asp:Repeater>
-                    <div class="row">
-                        <div class="col-md-4">
-                        </div>
-                        <div class="col-md-4">
-                        </div>
-                        <div class="col-md-4">
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="panel panel-default">
-                                <div class="panel-heading">
-                                    <h4>Service History</h4>
-                                </div>
-                                <div class="panel-body">
-                                    <div>
-                                        <asp:Literal ID="ltServiceHScript" runat="server"></asp:Literal>
-                                        <div id="serviceHChartDiv"></div>
+                    <asp:HiddenField ID="hfCustNo" runat="server" />
+                    <asp:HiddenField ID="hfCustName" runat="server" />
+                    <asp:HiddenField ID="hfBRN" runat="server" />
+                    <asp:MultiView ID="mvResult" runat="server">
+                        <asp:View ID="vMifInfo" runat="server">
+                            <asp:Repeater runat="server" ID="gvMifInfo">
+                                <ItemTemplate>
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h1><%# Eval("serialNo") %> <small runat="server" id="smCustName"><%# Eval("name") %></small>
+                                            </h1>
+                                        </div>
+                                        <div class="panel-body">
+                                            <dl class="dl-horizontal">
+                                                <dt>Model</dt>
+                                                <dd><span><%# Eval("model") %></span></dd>
+                                                <dt>Installed Date</dt>
+                                                <dd><span><%# Eval("installDate") %></span></dd>
+                                                <dt>Contract</dt>
+                                                <dd><span><%# Eval("contractNo") %></span></dd>
+                                                <dd><span><%# Eval("contractType") %></span></dd>
+                                                <dd><%# Eval("cntrctStart") %> - <%# Eval("cntrctEnd") %></dd>
+                                                <dt>Contact</dt>
+                                                <dd><span><%# Eval("contact") %></span></dd>
+                                                <dt>Location</dt>
+                                                <dd><span><%# Eval("location") %></span></dd>
+                                                <asp:LinkButton ID="btnShowCust" runat="server" CssClass="btn btn-sm btn-primary-outline pull-right"
+                                                    OnClick="btnShowCust_Click"><span class="icon icon-list"></span> Other Machines Under <%# Eval("name") %></asp:LinkButton>
+                                            </dl>
+                                        </div>
                                     </div>
-                                </div>
-                                    <ul class="list-group p-t-md">
-                                        <asp:Repeater runat="server" ID="gvServiceH">
-                                            <ItemTemplate>
-                                                <a class="list-group-item text text-lg" href='<%# "#" + Eval("serviceNo") %>' data-toggle="collapse"
-                                                    aria-expanded="false" aria-controls='<%# Eval("serviceNo") %>'>
-                                                    <span><%# Eval("serviceNo") %></span><small class="pull-right text-muted"><%# Eval("entryDate") %></small>
-                                                </a>
-                                                <div class="collapse" id='<%# Eval("serviceNo") %>'>
-                                                    <div class="well">
-                                                        <dl class="dl">
-                                                            <dt>Service Type</dt>
-                                                            <dd><span><%# Eval("typeOfService") %></span></dd>
-                                                            <dt>Technician</dt>
-                                                            <dd><span><%# Eval("techCode") %> - <%# Eval("techName") %> - <%# Eval("team") %></span>
-                                                            </dd>
-                                                            <dt>Problem Description</dt>
-                                                            <dd><span><%# Eval("problemDesc") %></span></dd>
-                                                            <dt>Cause Description</dt>
-                                                            <dd><span><%# Eval("causeDesc") %></span></dd>
-                                                            <dt>Repair Description</dt>
-                                                            <dd><span><%# Eval("repairDesc") %></span></dd>
-                                                            <dt>Parts Used</dt>
-                                                            <dd><span><%# Eval("parts") %></span></dd>
-                                                            <dt>BW Reading</dt>
-                                                            <dd><span><%# Eval("BWReading") %></span></dd>
-                                                            <dt>COL Reading</dt>
-                                                            <dd><span><%# Eval("COLReading") %></span></dd>
-                                                            <dt>Entry Date/Time</dt>
-                                                            <dd><span><%# Eval("entryDateTime") %></span></dd>
-                                                            <dt>Complete Date/Time</dt>
-                                                            <dd><span><%# Eval("completeDateTime") %></span></dd>
-                                                        </dl>
+                                </ItemTemplate>
+                            </asp:Repeater>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4>Service History</h4>
+                                        </div>
+                                        <div class="panel-body">
+                                            <div>
+                                                <asp:Literal ID="ltServiceHScript" runat="server"></asp:Literal>
+                                                <div id="serviceHChartDiv"></div>
+                                            </div>
+                                        </div>
+                                        <ul class="list-group p-t-md">
+                                            <asp:Repeater runat="server" ID="gvServiceH">
+                                                <ItemTemplate>
+                                                    <a class="list-group-item text text-lg" href='<%# "#" + Eval("serviceNo") %>' data-toggle="collapse"
+                                                        aria-expanded="false" aria-controls='<%# Eval("serviceNo") %>'>
+                                                        <span><%# Eval("serviceNo") %></span><small class="pull-right text-muted"><%# Eval("entryDate") %></small>
+                                                    </a>
+                                                    <div class="collapse" id='<%# Eval("serviceNo") %>'>
+                                                        <div class="well">
+                                                            <dl class="dl">
+                                                                <dt>Service Type</dt>
+                                                                <dd><span><%# Eval("typeOfService") %></span></dd>
+                                                                <dt>Technician</dt>
+                                                                <dd><span><%# Eval("techCode") %> - <%# Eval("techName") %> - <%# Eval("team") %></span>
+                                                                </dd>
+                                                                <dt>Problem Description</dt>
+                                                                <dd><span><%# Eval("problemDesc") %></span></dd>
+                                                                <dt>Cause Description</dt>
+                                                                <dd><span><%# Eval("causeDesc") %></span></dd>
+                                                                <dt>Repair Description</dt>
+                                                                <dd><span><%# Eval("repairDesc") %></span></dd>
+                                                                <dt>Parts Used</dt>
+                                                                <dd><span><%# Eval("parts") %></span></dd>
+                                                                <dt>BW Reading</dt>
+                                                                <dd><span><%# Eval("BWReading") %></span></dd>
+                                                                <dt>COL Reading</dt>
+                                                                <dd><span><%# Eval("COLReading") %></span></dd>
+                                                                <dt>Entry Date/Time</dt>
+                                                                <dd><span><%# Eval("entryDateTime") %></span></dd>
+                                                                <dt>Complete Date/Time</dt>
+                                                                <dd><span><%# Eval("completeDateTime") %></span></dd>
+                                                            </dl>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            </ItemTemplate>
-                                        </asp:Repeater>
-                                    </ul>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="panel panel-default">
-                                <div class="panel-heading">
-                                    <h4>Toner Supply History</h4>
-                                </div>
-                                <div class="panel-body">
-                                    <div>
-                                        <asp:Literal ID="ltTonerHScript" runat="server"></asp:Literal>
-                                        <div id="tonerHChartDiv"></div>
+                                                </ItemTemplate>
+                                            </asp:Repeater>
+                                        </ul>
                                     </div>
                                 </div>
-                                <ul class="list-group p-t-md">
-                                    <asp:Repeater runat="server" ID="gvTonerH">
+                                <div class="col-md-4">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4>Toner Supply History</h4>
+                                        </div>
+                                        <div class="panel-body">
+                                            <div>
+                                                <asp:Literal ID="ltTonerHScript" runat="server"></asp:Literal>
+                                                <div id="tonerHChartDiv"></div>
+                                            </div>
+                                        </div>
+                                        <ul class="list-group p-t-md">
+                                            <asp:Repeater runat="server" ID="gvTonerH">
+                                                <ItemTemplate>
+                                                    <li class="list-group-item">
+                                                        <h4 class="list-group-item-heading">
+                                                            <span><%# Eval("serviceNo") %></span><small class="pull-right text-muted"><%# Eval("invoiceDate") %></small>
+                                                        </h4>
+                                                        <div class="line-separator"></div>
+                                                        <div class="list-group-item-text">
+                                                            <dl class="dl">
+                                                                <dt>Toner Delivered</dt>
+                                                                <dd><span><%# Eval("toners") %></span></dd>
+                                                            </dl>
+                                                        </div>
+                                                    </li>
+                                                </ItemTemplate>
+                                            </asp:Repeater>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4>Meter Reading History</h4>
+                                        </div>
+                                        <div class="panel-body">
+                                            <div>
+                                                <asp:Literal ID="ltMeterHScript" runat="server"></asp:Literal>
+                                                <div id="meterHChartDiv"></div>
+                                            </div>
+                                        </div>
+                                        <ul class="list-group p-t-md">
+                                            <asp:Repeater runat="server" ID="gvMeterH">
+                                                <ItemTemplate>
+                                                    <li class="list-group-item">
+                                                        <h4 class="list-group-item-heading">
+                                                            <span><%# Eval("invoiceNo") %></span><small class="pull-right text-muted"><%# Eval("invoiceDate") %></small>
+                                                        </h4>
+                                                        <div class="line-separator"></div>
+                                                        <div class="list-group-item-text">
+                                                            <dl class="dl-horizontal">
+                                                                <dt>BW Copies</dt>
+                                                                <dd><span><%# Eval("bw") %></span></dd>
+                                                                <dt>COL Copies</dt>
+                                                                <dd><span><%# Eval("col") %></span></dd>
+                                                            </dl>
+                                                        </div>
+                                                    </li>
+                                                </ItemTemplate>
+                                            </asp:Repeater>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </asp:View>
+                        <asp:View ID="vSerialList" runat="server">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h1><%= hfCustName.Value %></h1>
+                                    <h4><%= hfCustNo.Value %></h4>
+                                    <h4><%= brn %></h4>
+                                </div>
+                                <ul class="list-group">
+                                    <asp:Repeater ID="gvSerialList" runat="server">
                                         <ItemTemplate>
-                                            <li class="list-group-item">
-                                                <h4 class="list-group-item-heading">
-                                                    <span><%# Eval("serviceNo") %></span><small class="pull-right text-muted"><%# Eval("invoiceDate") %></small>
-                                                </h4>
-                                                <div class="line-separator"></div>
-                                                <div class="list-group-item-text">
-                                                    <dl class="dl">
-                                                        <dt>Toner Delivered</dt>
-                                                        <dd><span><%# Eval("toners") %></span></dd>
-                                                    </dl>
-                                                </div>
-                                            </li>
+                                            <asp:LinkButton ID="lbSerial" runat="server" CssClass="list-group-item" OnClick="lbSerial_Click" Text='<%# Eval("serialNo") %>'></asp:LinkButton>
                                         </ItemTemplate>
                                     </asp:Repeater>
                                 </ul>
                             </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="panel panel-default">
-                                <div class="panel-heading">
-                                    <h4>Meter Reading History</h4>
-                                </div>
-                                <div class="panel-body">
-                                    <div>
-                                        <asp:Literal ID="ltMeterHScript" runat="server"></asp:Literal>
-                                        <div id="meterHChartDiv"></div>
-                                    </div>
-                                </div>
-                                <ul class="list-group p-t-md">
-                                    <asp:Repeater runat="server" ID="gvMeterH">
-                                        <ItemTemplate>
-                                            <li class="list-group-item">
-                                                <h4 class="list-group-item-heading">
-                                                    <span><%# Eval("invoiceNo") %></span><small class="pull-right text-muted"><%# Eval("invoiceDate") %></small>
-                                                </h4>
-                                                <div class="line-separator"></div>
-                                                <div class="list-group-item-text">
-                                                    <dl class="dl-horizontal">
-                                                        <dt>BW Copies</dt>
-                                                        <dd><span><%# Eval("bw") %></span></dd>
-                                                        <dt>COL Copies</dt>
-                                                        <dd><span><%# Eval("col") %></span></dd>
-                                                    </dl>
-                                                </div>
-                                            </li>
-                                        </ItemTemplate>
-                                    </asp:Repeater>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
+                            <asp:LinkButton ID="btnBack" runat="server" CssClass="btn btn-danger-outline" OnClick="btnBack_Click"><span class="icon icon-back"></span> Back</asp:LinkButton>
+                        </asp:View>
+                    </asp:MultiView>
                 </asp:WizardStep>
             </WizardSteps>
             <StepNavigationTemplate>
