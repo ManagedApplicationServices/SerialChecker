@@ -186,8 +186,9 @@ namespace SerialChecker
         protected void Email(string custNo, string custName, string brn)
         {
             MailMessage mailMessage = new MailMessage();
-            mailMessage.To.Add("ar@ricoh.sg");
-            mailMessage.CC.Add("zhaidy@ricoh.sg");
+            mailMessage.To.Add("zhaidy@ricoh.sg");
+            //mailMessage.To.Add("ar@ricoh.sg");
+            //mailMessage.CC.Add("zhaidy@ricoh.sg");
             //mailMessage.To.Add("AdrianLim@ricoh.sg");
             mailMessage.From = new MailAddress("rspops@ricoh.sg", "Managed Application Services");
             mailMessage.Subject = "Customer BRN Update [RESTRICTED]";
